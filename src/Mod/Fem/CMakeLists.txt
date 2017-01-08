@@ -116,6 +116,7 @@ SET(FemInOut_SRCS
     feminout/importCcxDatResults.py
     feminout/importCcxFrdResults.py
     feminout/importFenicsMesh.py
+    feminout/importFrame3DD.py
     feminout/importInpMesh.py
     feminout/importPyMesh.py
     feminout/importToolsFem.py
