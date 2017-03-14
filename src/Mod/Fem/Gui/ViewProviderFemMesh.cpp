@@ -765,11 +765,13 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     int numPris = info.NbPrisms();
 
 
-    bool ShowFaces = (numFaces >0 && numVolu == 0);
+    //bool ShowFaces = (numFaces >0 && numVolu == 0);
+    bool ShowFaces = (numFaces >0);
 
     int numTries;
     if(ShowFaces)
-        numTries = numTria+numQuad/*+numPoly*/+numTetr*4+numHexa*6+numPyrd*5+numPris*5;
+        //numTries = numTria+numQuad/*+numPoly*/+numTetr*4+numHexa*6+numPyrd*5+numPris*5;
+        numTries = numTria+numQuad;
     else
         numTries = numTetr*4+numHexa*6+numPyrd*5+numPris*5;
     // It is not 100% sure that a prism in smesh is a pentahedron in any case, but it will be in most cases!
@@ -794,6 +796,7 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
             const SMDS_MeshFace* aFace = aFaceIter->next();
 
             int num = aFace->NbNodes();
+            Base::Console().Log("    %f: Num nodes %i face helper\n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()),num);
             switch(num){
             case 3:
                 //tria3 face = N1, N2, N3
@@ -1072,11 +1075,14 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     int triangleCount=0;
     for (int l = 0; l < FaceSize; l++){
         if (!facesHelper[l].hide)
-            switch (facesHelper[l].Size){
+        Base::Console().Log("    triangleCount:%i\n",facesHelper[l].Size);
+        switch (facesHelper[l].Size){
             case 3:triangleCount++; break;     // 3-node triangle face   --> 1 triangle
             case 4:triangleCount += 2; break;  // 4-node quadrangle face --> 2 triangles
             case 6:triangleCount += 4; break;  // 6-node triangle face   --> 4 triangles
             case 8:triangleCount += 6; break;  // 8-node quadrangle face --> 6 triangles
+            case 0:Base::Console().Log("    triangleCount:%i\n",facesHelper[l].Size); throw std::runtime_error("Face with no nodes!");
+            // case 0 could happen if size of facesHelper is greater than faces in facesHelper!
             default: throw std::runtime_error("Face with unknown node count found, only display mode nodes is supported for this element (tiangleCount)");
         }
     }
