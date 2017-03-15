@@ -769,9 +769,11 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     bool ShowFaces = (numFaces >0);
 
     int numTries;
-    if(ShowFaces)
-        //numTries = numTria+numQuad/*+numPoly*/+numTetr*4+numHexa*6+numPyrd*5+numPris*5;
-        numTries = numTria+numQuad;
+    if(ShowFaces) {
+        numTries = numTria+numQuad/*+numPoly*/+numTetr*4+numHexa*6+numPyrd*5+numPris*5;
+        Base::Console().Log("    %f: numTries %i \n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()),numTries);
+        //numTries = numTria+numQuad;
+    }
     else
         numTries = numTetr*4+numHexa*6+numPyrd*5+numPris*5;
     // It is not 100% sure that a prism in smesh is a pentahedron in any case, but it will be in most cases!
@@ -790,159 +792,158 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
 
     int i=0;
 
-    if (ShowFaces){
-        SMDS_FaceIteratorPtr aFaceIter = data->facesIterator();
-        for (;aFaceIter->more();) {
-            const SMDS_MeshFace* aFace = aFaceIter->next();
+    SMDS_FaceIteratorPtr aFaceIter = data->facesIterator();
+    for (;aFaceIter->more();) {
+        const SMDS_MeshFace* aFace = aFaceIter->next();
 
-            int num = aFace->NbNodes();
-            Base::Console().Log("    %f: Num nodes %i face helper\n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()),num);
-            switch(num){
-            case 3:
-                //tria3 face = N1, N2, N3
-                BndBox.Add(facesHelper[i++].set(3, aFace, aFace->GetID(), 0, aFace->GetNode(0), aFace->GetNode(1), aFace->GetNode(2)));
-                break;
-            case 4:
-                //quad4 face = N1, N2, N3, N4
-                BndBox.Add(facesHelper[i++].set(4, aFace, aFace->GetID(), 0, aFace->GetNode(0), aFace->GetNode(1), aFace->GetNode(2), aFace->GetNode(3)));
-                break;
-            case 6:
-                //tria6 face = N1, N4, N2, N5, N3, N6
-                BndBox.Add(facesHelper[i++].set(6, aFace, aFace->GetID(), 0, aFace->GetNode(0), aFace->GetNode(3), aFace->GetNode(1), aFace->GetNode(4), aFace->GetNode(2), aFace->GetNode(5)));
-                break;
-            case 8:
-                //quad8 face = N1, N5, N2, N6, N3, N7, N4, N8
-                BndBox.Add(facesHelper[i++].set(8, aFace, aFace->GetID(), 0, aFace->GetNode(0), aFace->GetNode(4), aFace->GetNode(1), aFace->GetNode(5), aFace->GetNode(2), aFace->GetNode(6), aFace->GetNode(3), aFace->GetNode(7)));
-                break;
-            default:
-                //unknown face type
-                throw std::runtime_error("Node count not supported by ViewProviderFemMesh, [3|4|6|8] are allowed");
-            }
+        int num = aFace->NbNodes();
+        //Base::Console().Log("    %f: Num nodes %i face helper\n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()),num);
+        switch(num){
+        case 3:
+            //tria3 face = N1, N2, N3
+            BndBox.Add(facesHelper[i++].set(3, aFace, aFace->GetID(), 0, aFace->GetNode(0), aFace->GetNode(1), aFace->GetNode(2)));
+            break;
+        case 4:
+            //quad4 face = N1, N2, N3, N4
+            BndBox.Add(facesHelper[i++].set(4, aFace, aFace->GetID(), 0, aFace->GetNode(0), aFace->GetNode(1), aFace->GetNode(2), aFace->GetNode(3)));
+            break;
+        case 6:
+            //tria6 face = N1, N4, N2, N5, N3, N6
+            BndBox.Add(facesHelper[i++].set(6, aFace, aFace->GetID(), 0, aFace->GetNode(0), aFace->GetNode(3), aFace->GetNode(1), aFace->GetNode(4), aFace->GetNode(2), aFace->GetNode(5)));
+            break;
+        case 8:
+            //quad8 face = N1, N5, N2, N6, N3, N7, N4, N8
+            BndBox.Add(facesHelper[i++].set(8, aFace, aFace->GetID(), 0, aFace->GetNode(0), aFace->GetNode(4), aFace->GetNode(1), aFace->GetNode(5), aFace->GetNode(2), aFace->GetNode(6), aFace->GetNode(3), aFace->GetNode(7)));
+            break;
+        default:
+            //unknown face type
+            throw std::runtime_error("Node count not supported by ViewProviderFemMesh, [3|4|6|8] are allowed");
         }
     }
-    else{
 
-        // iterate all volumes
-        SMDS_VolumeIteratorPtr aVolIter = data->volumesIterator();
-        for (; aVolIter->more();) {
-            const SMDS_MeshVolume* aVol = aVolIter->next();
-
-            int num = aVol->NbNodes();
-
-            switch (num){
-            //tetra4 volume
-            case 4:
-                // face 1 = N1, N2, N3
-                // face 2 = N1, N4, N2
-                // face 3 = N2, N4, N3
-                // face 4 = N3, N4, N1
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(1), aVol->GetNode(2)));
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 2, aVol->GetNode(0), aVol->GetNode(3), aVol->GetNode(1)));
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 3, aVol->GetNode(1), aVol->GetNode(3), aVol->GetNode(2)));
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 4, aVol->GetNode(2), aVol->GetNode(3), aVol->GetNode(0)));
-                break;
-            //pyra5 volume
-            case 5:
-                // face 1 = N1, N2, N3, N4
-                // face 2 = N1, N5, N2
-                // face 3 = N2, N5, N3
-                // face 4 = N3, N5, N4
-                // face 5 = N4, N5, N1
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(1), aVol->GetNode(2), aVol->GetNode(3)));
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 2, aVol->GetNode(0), aVol->GetNode(4), aVol->GetNode(1)));
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 3, aVol->GetNode(1), aVol->GetNode(4), aVol->GetNode(2)));
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 4, aVol->GetNode(2), aVol->GetNode(4), aVol->GetNode(3)));
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 5, aVol->GetNode(3), aVol->GetNode(4), aVol->GetNode(0)));
-                break;
-            //penta6 volume
-            case 6:
-                // face 1 = N1, N2, N3
-                // face 2 = N4, N6, N5
-                // face 3 = N1, N4, N5, N2
-                // face 4 = N2, N5, N6, N3
-                // face 5 = N3, N6, N4, N1
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(1), aVol->GetNode(2)));
-                BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 2, aVol->GetNode(3), aVol->GetNode(5), aVol->GetNode(4)));
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 3, aVol->GetNode(0), aVol->GetNode(3), aVol->GetNode(4), aVol->GetNode(1)));
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 4, aVol->GetNode(1), aVol->GetNode(4), aVol->GetNode(5), aVol->GetNode(2)));
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 5, aVol->GetNode(2), aVol->GetNode(5), aVol->GetNode(3), aVol->GetNode(0)));
-                break;
-            //hexa8 volume
-            case 8:
-                // face 1 = N1, N2, N3, N4
-                // face 2 = N5, N8, N7, N6
-                // face 3 = N1, N5, N6, N2
-                // face 4 = N2, N6, N7, N3
-                // face 5 = N3, N7, N8, N4
-                // face 6 = N4, N8, N5, N1
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(1), aVol->GetNode(2), aVol->GetNode(3)));
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 2, aVol->GetNode(4), aVol->GetNode(7), aVol->GetNode(6), aVol->GetNode(5)));
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 3, aVol->GetNode(0), aVol->GetNode(4), aVol->GetNode(5), aVol->GetNode(1)));
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 4, aVol->GetNode(1), aVol->GetNode(5), aVol->GetNode(6), aVol->GetNode(2)));
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 5, aVol->GetNode(2), aVol->GetNode(6), aVol->GetNode(7), aVol->GetNode(3)));
-                BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 6, aVol->GetNode(3), aVol->GetNode(7), aVol->GetNode(4), aVol->GetNode(0)));
-                break;
-            //tetra10 volume
-            case 10:
-                // face 1 = N1, N5,  N2, N6,  N3, N7
-                // face 2 = N1, N8,  N4, N9,  N2, N5
-                // face 3 = N2, N9,  N4, N10, N3, N6
-                // face 4 = N3, N10, N4, N8,  N1, N7
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(4), aVol->GetNode(1), aVol->GetNode(5), aVol->GetNode(2), aVol->GetNode(6)));
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 2, aVol->GetNode(0), aVol->GetNode(7), aVol->GetNode(3), aVol->GetNode(8), aVol->GetNode(1), aVol->GetNode(4)));
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 3, aVol->GetNode(1), aVol->GetNode(8), aVol->GetNode(3), aVol->GetNode(9), aVol->GetNode(2), aVol->GetNode(5)));
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 4, aVol->GetNode(2), aVol->GetNode(9), aVol->GetNode(3), aVol->GetNode(7), aVol->GetNode(0), aVol->GetNode(6)));
-                break;
-            //pyra13 volume
-            case 13:
-                // face 1 = N1, N6, N2, N7,  N3,  N8, N4, N9
-                // face 2 = N1, N10, N5, N11, N2, N6
-                // face 3 = N2, N11, N5, N12, N3, N7
-                // face 4 = N3, N12, N5, N13, N4, N8
-                // face 5 = N4, N13, N5, N10, N1, N9
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(5),  aVol->GetNode(1), aVol->GetNode(6),  aVol->GetNode(2), aVol->GetNode(7), aVol->GetNode(3), aVol->GetNode(8)));
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 2, aVol->GetNode(0), aVol->GetNode(9),  aVol->GetNode(4), aVol->GetNode(10), aVol->GetNode(1), aVol->GetNode(5)));
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 3, aVol->GetNode(1), aVol->GetNode(10), aVol->GetNode(4), aVol->GetNode(11), aVol->GetNode(2), aVol->GetNode(6)));
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 4, aVol->GetNode(2), aVol->GetNode(11), aVol->GetNode(4), aVol->GetNode(12), aVol->GetNode(3), aVol->GetNode(7)));
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 5, aVol->GetNode(3), aVol->GetNode(12), aVol->GetNode(4), aVol->GetNode(9),  aVol->GetNode(0), aVol->GetNode(8)));
-                break;
-            //penta15 volume
-            case 15:
-                // face 1 = N1, N7,  N2, N8,  N3, N9
-                // face 2 = N4, N12, N6, N11, N5, N10
-                // face 3 = N1, N13, N4, N10, N5, N14, N2, N7
-                // face 4 = N2, N14, N5, N11, N6, N15, N3, N8
-                // face 5 = N3, N15, N6, N12, N4, N13, N1, N9
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(6),  aVol->GetNode(1), aVol->GetNode(7),  aVol->GetNode(2), aVol->GetNode(8)));
-                BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 2, aVol->GetNode(3), aVol->GetNode(11), aVol->GetNode(5), aVol->GetNode(10), aVol->GetNode(4), aVol->GetNode(9)));
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 3, aVol->GetNode(0), aVol->GetNode(12), aVol->GetNode(3), aVol->GetNode(9),  aVol->GetNode(4), aVol->GetNode(13), aVol->GetNode(1), aVol->GetNode(6)));
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 4, aVol->GetNode(1), aVol->GetNode(13), aVol->GetNode(4), aVol->GetNode(10), aVol->GetNode(5), aVol->GetNode(14), aVol->GetNode(2), aVol->GetNode(7)));
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 5, aVol->GetNode(2), aVol->GetNode(14), aVol->GetNode(5), aVol->GetNode(11), aVol->GetNode(3), aVol->GetNode(12), aVol->GetNode(0), aVol->GetNode(8)));
-                break;
-            //hexa20 volume
-            case 20:
-                // face 1 = N1, N9,  N2, N10, N3, N11, N4, N12
-                // face 2 = N5, N16, N8, N15, N7, N14, N6, N13
-                // face 3 = N1, N17, N5, N13, N6, N18, N2, N9
-                // face 4 = N2, N18, N6, N14, N7, N19, N3, N10
-                // face 5 = N3, N19, N7, N15, N8, N20, N4, N11
-                // face 6 = N4, N20, N8, N16, N5, N17, N1, N12
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 1, aVol->GetNode(0),  aVol->GetNode(8), aVol->GetNode(1),  aVol->GetNode(9), aVol->GetNode(2), aVol->GetNode(10), aVol->GetNode(3), aVol->GetNode(11)));
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 2, aVol->GetNode(4), aVol->GetNode(15), aVol->GetNode(7), aVol->GetNode(14), aVol->GetNode(6), aVol->GetNode(13), aVol->GetNode(5), aVol->GetNode(12)));
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 3, aVol->GetNode(0), aVol->GetNode(16), aVol->GetNode(4), aVol->GetNode(12), aVol->GetNode(5), aVol->GetNode(17), aVol->GetNode(1),  aVol->GetNode(8)));
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 4, aVol->GetNode(1), aVol->GetNode(17), aVol->GetNode(5), aVol->GetNode(13), aVol->GetNode(6), aVol->GetNode(18), aVol->GetNode(2),  aVol->GetNode(9)));
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 5, aVol->GetNode(2), aVol->GetNode(18), aVol->GetNode(6), aVol->GetNode(14), aVol->GetNode(7), aVol->GetNode(19), aVol->GetNode(3), aVol->GetNode(10)));
-                BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 6, aVol->GetNode(3), aVol->GetNode(19), aVol->GetNode(7), aVol->GetNode(15), aVol->GetNode(4), aVol->GetNode(16), aVol->GetNode(0), aVol->GetNode(11)));
-                break;
-            //unknown volume type
-            default:
-                throw std::runtime_error("Node count not supported by ViewProviderFemMesh, [4|5|6|8|10|13|15|20] are allowed");
-            }
+    // iterate all volumes
+    SMDS_VolumeIteratorPtr aVolIter = data->volumesIterator();
+    for (; aVolIter->more();) {
+        const SMDS_MeshVolume* aVol = aVolIter->next();
+ 
+        int num = aVol->NbNodes();
+ 
+        switch (num){
+        //tetra4 volume
+        case 4:
+            // face 1 = N1, N2, N3
+            // face 2 = N1, N4, N2
+            // face 3 = N2, N4, N3
+            // face 4 = N3, N4, N1
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(1), aVol->GetNode(2)));
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 2, aVol->GetNode(0), aVol->GetNode(3), aVol->GetNode(1)));
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 3, aVol->GetNode(1), aVol->GetNode(3), aVol->GetNode(2)));
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 4, aVol->GetNode(2), aVol->GetNode(3), aVol->GetNode(0)));
+            break;
+        //pyra5 volume
+        case 5:
+            // face 1 = N1, N2, N3, N4
+            // face 2 = N1, N5, N2
+            // face 3 = N2, N5, N3
+            // face 4 = N3, N5, N4
+            // face 5 = N4, N5, N1
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(1), aVol->GetNode(2), aVol->GetNode(3)));
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 2, aVol->GetNode(0), aVol->GetNode(4), aVol->GetNode(1)));
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 3, aVol->GetNode(1), aVol->GetNode(4), aVol->GetNode(2)));
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 4, aVol->GetNode(2), aVol->GetNode(4), aVol->GetNode(3)));
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 5, aVol->GetNode(3), aVol->GetNode(4), aVol->GetNode(0)));
+            break;
+        //penta6 volume
+        case 6:
+            // face 1 = N1, N2, N3
+            // face 2 = N4, N6, N5
+            // face 3 = N1, N4, N5, N2
+            // face 4 = N2, N5, N6, N3
+            // face 5 = N3, N6, N4, N1
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(1), aVol->GetNode(2)));
+            BndBox.Add(facesHelper[i++].set(3, aVol, aVol->GetID(), 2, aVol->GetNode(3), aVol->GetNode(5), aVol->GetNode(4)));
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 3, aVol->GetNode(0), aVol->GetNode(3), aVol->GetNode(4), aVol->GetNode(1)));
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 4, aVol->GetNode(1), aVol->GetNode(4), aVol->GetNode(5), aVol->GetNode(2)));
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 5, aVol->GetNode(2), aVol->GetNode(5), aVol->GetNode(3), aVol->GetNode(0)));
+            break;
+        //hexa8 volume
+        case 8:
+            // face 1 = N1, N2, N3, N4
+            // face 2 = N5, N8, N7, N6
+            // face 3 = N1, N5, N6, N2
+            // face 4 = N2, N6, N7, N3
+            // face 5 = N3, N7, N8, N4
+            // face 6 = N4, N8, N5, N1
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(1), aVol->GetNode(2), aVol->GetNode(3)));
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 2, aVol->GetNode(4), aVol->GetNode(7), aVol->GetNode(6), aVol->GetNode(5)));
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 3, aVol->GetNode(0), aVol->GetNode(4), aVol->GetNode(5), aVol->GetNode(1)));
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 4, aVol->GetNode(1), aVol->GetNode(5), aVol->GetNode(6), aVol->GetNode(2)));
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 5, aVol->GetNode(2), aVol->GetNode(6), aVol->GetNode(7), aVol->GetNode(3)));
+            BndBox.Add(facesHelper[i++].set(4, aVol, aVol->GetID(), 6, aVol->GetNode(3), aVol->GetNode(7), aVol->GetNode(4), aVol->GetNode(0)));
+            break;
+        //tetra10 volume
+        case 10:
+            // face 1 = N1, N5,  N2, N6,  N3, N7
+            // face 2 = N1, N8,  N4, N9,  N2, N5
+            // face 3 = N2, N9,  N4, N10, N3, N6
+            // face 4 = N3, N10, N4, N8,  N1, N7
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(4), aVol->GetNode(1), aVol->GetNode(5), aVol->GetNode(2), aVol->GetNode(6)));
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 2, aVol->GetNode(0), aVol->GetNode(7), aVol->GetNode(3), aVol->GetNode(8), aVol->GetNode(1), aVol->GetNode(4)));
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 3, aVol->GetNode(1), aVol->GetNode(8), aVol->GetNode(3), aVol->GetNode(9), aVol->GetNode(2), aVol->GetNode(5)));
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 4, aVol->GetNode(2), aVol->GetNode(9), aVol->GetNode(3), aVol->GetNode(7), aVol->GetNode(0), aVol->GetNode(6)));
+            break;
+        //pyra13 volume
+        case 13:
+            // face 1 = N1, N6, N2, N7,  N3,  N8, N4, N9
+            // face 2 = N1, N10, N5, N11, N2, N6
+            // face 3 = N2, N11, N5, N12, N3, N7
+            // face 4 = N3, N12, N5, N13, N4, N8
+            // face 5 = N4, N13, N5, N10, N1, N9
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(5),  aVol->GetNode(1), aVol->GetNode(6),  aVol->GetNode(2), aVol->GetNode(7), aVol->GetNode(3), aVol->GetNode(8)));
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 2, aVol->GetNode(0), aVol->GetNode(9),  aVol->GetNode(4), aVol->GetNode(10), aVol->GetNode(1), aVol->GetNode(5)));
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 3, aVol->GetNode(1), aVol->GetNode(10), aVol->GetNode(4), aVol->GetNode(11), aVol->GetNode(2), aVol->GetNode(6)));
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 4, aVol->GetNode(2), aVol->GetNode(11), aVol->GetNode(4), aVol->GetNode(12), aVol->GetNode(3), aVol->GetNode(7)));
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 5, aVol->GetNode(3), aVol->GetNode(12), aVol->GetNode(4), aVol->GetNode(9),  aVol->GetNode(0), aVol->GetNode(8)));
+            break;
+        //penta15 volume
+        case 15:
+            // face 1 = N1, N7,  N2, N8,  N3, N9
+            // face 2 = N4, N12, N6, N11, N5, N10
+            // face 3 = N1, N13, N4, N10, N5, N14, N2, N7
+            // face 4 = N2, N14, N5, N11, N6, N15, N3, N8
+            // face 5 = N3, N15, N6, N12, N4, N13, N1, N9
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 1, aVol->GetNode(0), aVol->GetNode(6),  aVol->GetNode(1), aVol->GetNode(7),  aVol->GetNode(2), aVol->GetNode(8)));
+            BndBox.Add(facesHelper[i++].set(6, aVol, aVol->GetID(), 2, aVol->GetNode(3), aVol->GetNode(11), aVol->GetNode(5), aVol->GetNode(10), aVol->GetNode(4), aVol->GetNode(9)));
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 3, aVol->GetNode(0), aVol->GetNode(12), aVol->GetNode(3), aVol->GetNode(9),  aVol->GetNode(4), aVol->GetNode(13), aVol->GetNode(1), aVol->GetNode(6)));
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 4, aVol->GetNode(1), aVol->GetNode(13), aVol->GetNode(4), aVol->GetNode(10), aVol->GetNode(5), aVol->GetNode(14), aVol->GetNode(2), aVol->GetNode(7)));
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 5, aVol->GetNode(2), aVol->GetNode(14), aVol->GetNode(5), aVol->GetNode(11), aVol->GetNode(3), aVol->GetNode(12), aVol->GetNode(0), aVol->GetNode(8)));
+            break;
+        //hexa20 volume
+        case 20:
+            // face 1 = N1, N9,  N2, N10, N3, N11, N4, N12
+            // face 2 = N5, N16, N8, N15, N7, N14, N6, N13
+            // face 3 = N1, N17, N5, N13, N6, N18, N2, N9
+            // face 4 = N2, N18, N6, N14, N7, N19, N3, N10
+            // face 5 = N3, N19, N7, N15, N8, N20, N4, N11
+            // face 6 = N4, N20, N8, N16, N5, N17, N1, N12
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 1, aVol->GetNode(0),  aVol->GetNode(8), aVol->GetNode(1),  aVol->GetNode(9), aVol->GetNode(2), aVol->GetNode(10), aVol->GetNode(3), aVol->GetNode(11)));
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 2, aVol->GetNode(4), aVol->GetNode(15), aVol->GetNode(7), aVol->GetNode(14), aVol->GetNode(6), aVol->GetNode(13), aVol->GetNode(5), aVol->GetNode(12)));
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 3, aVol->GetNode(0), aVol->GetNode(16), aVol->GetNode(4), aVol->GetNode(12), aVol->GetNode(5), aVol->GetNode(17), aVol->GetNode(1),  aVol->GetNode(8)));
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 4, aVol->GetNode(1), aVol->GetNode(17), aVol->GetNode(5), aVol->GetNode(13), aVol->GetNode(6), aVol->GetNode(18), aVol->GetNode(2),  aVol->GetNode(9)));
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 5, aVol->GetNode(2), aVol->GetNode(18), aVol->GetNode(6), aVol->GetNode(14), aVol->GetNode(7), aVol->GetNode(19), aVol->GetNode(3), aVol->GetNode(10)));
+            BndBox.Add(facesHelper[i++].set(8, aVol, aVol->GetID(), 6, aVol->GetNode(3), aVol->GetNode(19), aVol->GetNode(7), aVol->GetNode(15), aVol->GetNode(4), aVol->GetNode(16), aVol->GetNode(0), aVol->GetNode(11)));
+            break;
+        //unknown volume type
+        default:
+            throw std::runtime_error("Node count not supported by ViewProviderFemMesh, [4|5|6|8|10|13|15|20] are allowed");
         }
     }
+ 
     int FaceSize = facesHelper.size();
+    Base::Console().Log("    %f: FaceSize: %i \n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()),FaceSize);
 
 
+    /*
     if( FaceSize < MaxFacesShowInner){
         Base::Console().Log("    %f: Start eliminate internal faces SIMPLE\n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()));
 
@@ -1021,7 +1022,7 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
         Base::Console().Log("      VoxelSize: Max:%i ,Average:%i\n",max,avg);
 
     } //if( FaceSize < 1000)
-
+    */
 
     Base::Console().Log("    %f: Start build up node map\n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()));
 
@@ -1075,7 +1076,7 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     int triangleCount=0;
     for (int l = 0; l < FaceSize; l++){
         if (!facesHelper[l].hide)
-        Base::Console().Log("    triangleCount:%i\n",facesHelper[l].Size);
+        //Base::Console().Log("    triangleCount:%i\n",facesHelper[l].Size);
         switch (facesHelper[l].Size){
             case 3:triangleCount++; break;     // 3-node triangle face   --> 1 triangle
             case 4:triangleCount += 2; break;  // 4-node quadrangle face --> 2 triangles
