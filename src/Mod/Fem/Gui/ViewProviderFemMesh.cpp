@@ -1029,6 +1029,14 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     // sort out double nodes and build up index map
     std::map<const SMDS_MeshNode*, int> mapNodeIndex;
 
+
+    // use nodes of the mesh instead of either the edge nodes only or the volume and face nodes only (code following which is commented)
+    SMDS_NodeIteratorPtr aNodeIter = data->nodesIterator();
+    for (; aNodeIter->more();) {
+        const SMDS_MeshNode* aNode = aNodeIter->next();
+        mapNodeIndex[aNode] = 0;
+    }
+    /*
     // handling the corner case beams only, means no faces/triangles only nodes and edges
     if (onlyEdges){
 
@@ -1054,6 +1062,7 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
             }
         }
     }
+    */
     Base::Console().Log("    %f: Start set point vector\n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()));
 
     // set the point coordinates
@@ -1092,7 +1101,9 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     std::map<int,std::set<int> > EdgeMap;
 
     // handling the corner case beams only, means no faces/triangles only nodes and edges
-    if (onlyEdges){
+    // take all edges in any case ... 
+    if(true){
+    //if (onlyEdges){
 
         SMDS_EdgeIteratorPtr aEdgeIte = data->edgesIterator();
         for (; aEdgeIte->more();) {
