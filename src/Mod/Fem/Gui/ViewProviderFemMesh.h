@@ -52,9 +52,9 @@ public:
                     SoIndexedLineSet*,
                     std::vector<unsigned long>&,
                     std::vector<unsigned long>&,
-                    bool &edgeOnly,
-                    bool ShowInner,
-                    int MaxFacesShowInner
+                    bool &edgeOnly //,
+                    // bool ShowInner,
+                    // int MaxFacesShowInner
                    ) const;
 };
 
