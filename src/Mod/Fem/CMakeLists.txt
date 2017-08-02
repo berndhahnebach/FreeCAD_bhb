@@ -115,6 +115,7 @@ SET(FemInOut_SRCS
     feminout/convert2TetGen.py
     feminout/importCcxDatResults.py
     feminout/importCcxFrdResults.py
+    feminout/importGmshMesh.py
     feminout/importFenicsMesh.py
     feminout/importInpMesh.py
     feminout/importPyMesh.py
