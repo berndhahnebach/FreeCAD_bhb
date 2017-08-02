@@ -46,6 +46,30 @@ class GmshError(Exception):
 
 
 class GmshTools():
+
+    supported_mesh_output_formats = {
+        "Gmsh MSH": 1,
+        "I-Deas universal": 2,
+        "Automatic": 10,
+        "STL surface": 27,
+        "INRIA medit": 30,
+        "CGNS": 32,
+        "Salome mesh": 33,
+        "Abaqus INP": 39,
+        "Ploy surface": 42,
+    }
+    output_format_suffix = {
+        "Gmsh MSH": ".msh",
+        "I-Deas universal": ".unv",
+        "Automatic": ".msh",
+        "STL surface": ".stl",
+        "INRIA medit": ".mesh",
+        "CGNS": ".cgns",
+        "Salome mesh": "med",
+        "Abaqus INP": ".inp",
+        "Ploy surface": ".ply2",
+    }
+
     def __init__(self, gmsh_mesh_obj, analysis=None):
 
         # mesh obj
@@ -175,6 +199,37 @@ class GmshTools():
         self.gmsh_bin = ""
         self.error = False
 
+    def export_mesh(self, output_format, output_filestring=None, scaling=False):
+        # This function aims to export more mesh formats than FemMesh supported
+        _output_format = self.mesh_obj.OutputFormat  # push back the current OutputFormat
+        output_filename = None
+        try:
+            self.mesh_obj.OutputFormat = output_format
+            # same as create_mesh(), without loading mesh into FreeCAD
+            self.get_dimension()
+            self.get_tmp_file_paths()
+            self.get_gmsh_command()
+            self.get_group_data()
+            self.get_region_data()
+            self.get_boundary_layer_data()
+            self.write_part_file()
+            self.write_geo(True)
+            error = self.run_gmsh_with_geo()  # this function will set self.error = True
+            if self.error:
+                print("Gmsh has error during mesh generation for mesh format {}".format(error))
+            else:
+                output_filename = self.temp_file_mesh
+                print("Gmsh has generated mesh format {} into file: {}".format(output_format, output_filename))
+                if output_filestring:
+                    import shutil
+                    shutil.move(output_filename, output_filestring)
+                    output_filename = output_filestring
+        except Exception as e:
+            print(e)
+        finally:
+            self.mesh_obj.OutputFormat = _output_format
+        return output_filename
+
     def update_mesh_data(self):
         self.start_logs()
         self.get_dimension()
@@ -293,10 +348,12 @@ class GmshTools():
         # file paths
         _geometry_name = self.part_obj.Name + "_Geometry"
         self.mesh_name = self.part_obj.Name + "_Mesh"
+        # ".unv"
+        _suffix = GmshTools.output_format_suffix[self.mesh_obj.OutputFormat]
         # geometry file
         self.temp_file_geometry = os.path.join(self.working_dir, _geometry_name + ".brep")
         # mesh file
-        self.temp_file_mesh = os.path.join(self.working_dir, self.mesh_name + ".unv")
+        self.temp_file_mesh = os.path.join(self.working_dir, self.mesh_name + _suffix)
         # Gmsh input file
         self.temp_file_geo = os.path.join(self.working_dir, "shape2mesh.geo")
         Console.PrintMessage("  " + self.temp_file_geometry + "\n")
@@ -729,7 +786,7 @@ class GmshTools():
     def write_part_file(self):
         self.part_obj.Shape.exportBrep(self.temp_file_geometry)
 
-    def write_geo(self):
+    def write_geo(self, scaling=False):
         geo = open(self.temp_file_geo, "w")
         geo.write("// geo file for meshing with Gmsh meshing software created by FreeCAD\n")
         geo.write("\n")
@@ -770,6 +827,12 @@ class GmshTools():
         self.write_boundary_layer(geo)
 
         # mesh parameter
+        if scaling:  # from FreeCAD length unit to MKS
+            unit_shema = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Units/").GetInt("UserSchema")
+            if unit_shema == 0:  # mm as length unit, default for CAD
+                geo.write("// length scale from current FreeCAD length unit to MKS unit (meter)\n")
+                geo.write("Mesh.ScalingFactor={};\n".format(0.001))
+                geo.write("\n")
         geo.write("// min, max Characteristic Length\n")
         geo.write("Mesh.CharacteristicLengthMax = " + str(self.clmax) + ";\n")
         if len(self.bl_setting_list):
@@ -871,8 +934,10 @@ class GmshTools():
         geo.write("\n")
 
         # save mesh
-        geo.write("// save\n")
-        geo.write("Mesh.Format = 2;\n")  # unv
+        geo.write("// output format 1=msh, 2=unv, 10=automatic, 27=stl, 32=cgns, 33=med, 39=inp, 40=ply2\n")
+        geo.write("Mesh.Format = {};\n".format(
+            GmshTools.supported_mesh_output_formats[self.mesh_obj.OutputFormat]
+        ))
         if self.group_elements and self.group_nodes_export:
             geo.write("// For each group save not only the elements but the nodes too.;\n")
             geo.write("Mesh.SaveGroupsOfNodes = 1;\n")

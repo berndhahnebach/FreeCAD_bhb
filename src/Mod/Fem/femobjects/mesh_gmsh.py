@@ -73,6 +73,17 @@ class MeshGmsh(base_fempythonobject.BaseFemPythonObject):
         "Elastic",
         "Fast curving"
     ]
+    known_mesh_output_format = {
+        'Gmsh MSH': 1,
+        'I-Deas universal': 2,
+        'Automatic': 10,
+        'STL surface': 27,
+        'INRIA medit': 30,
+        'CGNS': 32,
+        'Salome mesh': 33,
+        'Abaqus INP': 39,
+        'Ploy surface': 42
+    }
 
     def __init__(self, obj):
         super(MeshGmsh, self).__init__(obj)
@@ -305,3 +316,13 @@ class MeshGmsh(base_fempythonobject.BaseFemPythonObject):
                 "For each group create not only the elements but the nodes too."
             )
             obj.GroupsOfNodes = False
+
+        if not hasattr(obj, "OutputFormat"):
+            obj.addProperty(
+                "App::PropertyEnumeration",
+                "OutputFormat",
+                "FEM GMSH Mesh Params",
+                "mesh output file format"
+            )
+            obj.OutputFormat = [k for k in _FemMeshGmsh.known_mesh_output_format.keys()]
+            obj.OutputFormat = 'I-Deas universal'  # unv is supported by Calculix
