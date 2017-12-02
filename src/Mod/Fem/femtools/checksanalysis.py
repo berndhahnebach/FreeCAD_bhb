@@ -309,10 +309,11 @@ def check_analysismember(analysis, solver, mesh, member):
     if member.geos_beamsection:
         if member.geos_shellthickness:
             # this needs to be checked only once either here or in shell_thicknesses
-            message += (
-                "Beam sections and shell thicknesses in one analysis "
-                "is not supported at the moment.\n"
-            )
+            # message += (
+            #     "Beam sections and shell thicknesses in one analysis "
+            #     "is not supported at the moment.\n"
+            # )
+            pass  # allow beam sections and shell thicknesse in one analysis
         if member.geos_fluidsection:
             # this needs to be checked only once either here or in shell_thicknesses
             message += (
@@ -334,9 +335,10 @@ def check_analysismember(analysis, solver, mesh, member):
                     "Beam sections defined but FEM mesh has volume or shell elements.\n"
                 )
             if mesh.FemMesh.EdgeCount == 0:
-                message += (
-                    "Beam sections defined but FEM mesh has no edge elements.\n"
-                )
+                # message += (
+                #     "Beam sections defined but FEM mesh has no edge elements.\n"
+                # )
+                pass  # allow beam sections even though FEM mesh has volume or shell elements
         if len(member.geos_beamrotation) > 1:
             message += (
                 "Multiple beam rotations in one analysis are not supported at the moment.\n"
@@ -357,7 +359,8 @@ def check_analysismember(analysis, solver, mesh, member):
                 has_no_references = True
         if mesh:
             if mesh.FemMesh.VolumeCount > 0:
-                message += "Shell thicknesses defined but FEM mesh has volume elements.\n"
+                # message += "Shell thicknesses defined but FEM mesh has volume elements.\n"
+                pass  # allow thicknesse even though FEM mesh has volumes
             if mesh.FemMesh.FaceCount == 0:
                 message += "Shell thicknesses defined but FEM mesh has no shell elements.\n"
     # fluid section
