@@ -34,7 +34,11 @@ from femmesh import meshtools
 
 def write_mesh(ccxwriter):
 
-    element_param = 1  # highest element order only
+    # write mesh to file
+    # FEM elements only
+    # only edges not belonging to faces and faces not belonging to volumes
+    # but this could be wrong, example: open bridge (Trogbruecke)
+    element_param = 2
     group_param = False  # do not write mesh group data
     if ccxwriter.split_inpfile is True:
         write_name = "femesh"
