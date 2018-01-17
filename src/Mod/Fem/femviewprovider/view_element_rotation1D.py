@@ -29,7 +29,7 @@ __url__ = "https://www.freecadweb.org"
 #  \ingroup FEM
 #  \brief view provider for element rotation 1D object
 
-# from femtaskpanels import task_element_rotation1D
+from femtaskpanels import task_element_rotation1D
 from . import view_base_femconstraint
 
 
@@ -38,8 +38,6 @@ class VPElementRotation1D(view_base_femconstraint.VPBaseFemConstraint):
     A View Provider for the ElementRotation1D object
     """
 
-    """
-    # do not activate the task panel, since rotation with reference shapes is not yet supported
     def setEdit(self, vobj, mode=0):
         view_base_femconstraint.VPBaseFemConstraint.setEdit(
             self,
@@ -47,4 +45,3 @@ class VPElementRotation1D(view_base_femconstraint.VPBaseFemConstraint):
             mode,
             task_element_rotation1D._TaskPanel
         )
-    """

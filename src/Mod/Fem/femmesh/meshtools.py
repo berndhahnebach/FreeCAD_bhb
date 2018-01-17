@@ -583,9 +583,14 @@ def get_femelement_direction1D_set(
         # pre check, only one beam rotation with empty ref shapes is allowed
         # we need theshape for multiple rotations too
         # because of the corner cases mentioned above
-        FreeCAD.Console.PrintError("Multiple Rotations not yet supported!\n")
-    for rot_object in beamrotation_objects:  # debug output
-        FreeCAD.Console.PrintMessage("{}\n".format(rot_object["FEMRotations1D"]))
+        # FreeCAD.Console.PrintError('Multiple Rotations not yet supported!\n')
+        get_femelement_directions_refshapes(
+            femmesh,
+            femelement_table,
+            beamrotation_objects
+        )
+    for rot_object in beamrotation_objects:  # debug print
+        FreeCAD.Console.PrintError(rot_object["FEMRotations1D"])
 
 
 # ************************************************************************************************
@@ -611,6 +616,44 @@ def get_femelement_directions_theshape(femmesh, femelement_table, theshape):
 
 
 # ************************************************************************************************
+def get_femelement_directions_refshapes(
+    femmesh,
+    femelement_table,
+    beamrotation_objects
+):
+    # see get_femelement_direction1D_set
+    # get directions and femelements for each edge of reference shapes from
+    for rot_object in beamrotation_objects:
+        obj = rot_object['Object']
+        rotations_ids = []
+        for ref in obj.References:
+            for refelement in ref[1]:
+                e = get_element(ref[0], refelement)
+                # from here code is similar to get_femelement_directions_theshape()
+                # TODO make one def
+                the_edge = {}
+                the_edge['direction'] = e.Vertexes[1].Point - e.Vertexes[0].Point
+                edge_femnodes = femmesh.getNodesByEdge(e)  # femnodes for the current edge
+                # femelements for this edge
+                the_edge['ids'] = get_femelements_by_femnodes_std(
+                    femelement_table,
+                    edge_femnodes
+                )
+                for rot in rotations_ids:
+                    if rot['direction'] == the_edge['direction']:  # tolerance will be managed by FreeCAD see https://forum.freecadweb.org/viewtopic.php?f=22&t=14179
+                        rot['ids'] += the_edge['ids']
+                        break
+                else:
+                    rotations_ids.append(the_edge)
+        # rotation
+        # add normals for each direction
+        rotation_angle = obj.Rotation
+        for rot in rotations_ids:
+            rot['normal'] = get_beam_normal(rot['direction'], rotation_angle)
+        rot_object['FEMRotations1D'] = rotations_ids
+
+
+>>>>>>> FEM: beams, start multiple rotations
 def get_beam_normal(beam_direction, defined_angle):
     import math
     vector_a = beam_direction
