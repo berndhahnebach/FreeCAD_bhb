@@ -445,6 +445,20 @@ void FemVTKTools::exportVTKMesh(const FemMesh* mesh, vtkSmartPointer<vtkUnstruct
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     SMDS_NodeIteratorPtr aNodeIter = meshDS->nodesIterator();
 
+   /*
+    // get the highest NodeID, this could be done smarter, for sure :-)
+    int endID = 0;
+    while (aNodeIter->more()) {
+        const SMDS_MeshNode* node = aNodeIter->next();
+        int nodeID = node->GetID();
+        if (nodeID > endID)
+            endID = nodeID;
+    }
+
+    //points->SetNumberOfPoints(endID);  // do not use node count but the hightest node id instead
+    aNodeIter = meshDS->nodesIterator();  // reset the node iterator
+    // if points->SetPoint is used instead of points->InsertPoints the memory for points has to be allocated before by SetNumberOfPoints
+    */
     int i = 0;
     while (aNodeIter->more()) {
         i++;
@@ -455,18 +469,34 @@ void FemVTKTools::exportVTKMesh(const FemMesh* mesh, vtkSmartPointer<vtkUnstruct
         // if the SMESH mesh has gaps in node numbering, points without any element assignment will be inserted in these point gaps too
         // this needs to be taken into account on node mapping when FreeCAD FEM results are exported to vtk
         int ndid = node->GetID();
+        // Base::Console().Log("    i: %d vs. ndid %d \n", i, ndid);
         // fill gaps with 0,0,0
         while (i < ndid) {
             double zerocoords[3] = {0, 0 ,0};
             points->InsertPoint(i-1, zerocoords);
+            Base::Console().Log("  Inserted Point with zero cord: %i.\n", i - 1);
             i++;
         }
         points->InsertPoint(ndid-1, coords);  // memory is allocated by VTK points size = max node id, points will be insterted in SMESH point gaps too
+        Base::Console().Log("  Inserted Point with real cord: %i.\n", ndid - 1);
     }
+    const vtkIdType nPoints = points->GetNumberOfPoints();
+    Base::Console().Message("  Size of nodes in VTK points: %i.\n", nPoints);
+    const SMDS_MeshInfo& info = meshDS->GetMeshInfo();
+<<<<<<< HEAD
+    Base::Console().Log("    Size of nodes in SMESH grid: %i.\n", info.NbNodes());
+=======
+    Base::Console().Message("    Size of nodes in SMESH grid: %i.\n", info.NbNodes());
+    // int resizePoints = 0;
+    // resizePoints = points->Resize(info.NbNodes());
+    // Base::Console().Message("  Resize succeeded on one: %i\n", resizePoints);
+    // const vtkIdType nPoints2 = points->GetNumberOfPoints();
+    // Base::Console().Message("  Size of nodes in VTK points2: %i.\n", nPoints2);
+    // resize does cut the array at the given length
+
     grid->SetPoints(points);
     // nodes debugging
-    const SMDS_MeshInfo& info = meshDS->GetMeshInfo();
-    Base::Console().Log("    Size of nodes in SMESH grid: %i.\n", info.NbNodes());
+>>>>>>> FEM: vtk, more fixes
     const vtkIdType nNodes = grid->GetNumberOfPoints();
     Base::Console().Log("    Size of nodes in VTK grid: %i.\n", nNodes);
     Base::Console().Log("  End: VTK mesh builder nodes.\n");
