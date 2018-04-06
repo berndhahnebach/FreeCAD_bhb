@@ -445,13 +445,23 @@ void FemVTKTools::exportVTKMesh(const FemMesh* mesh, vtkSmartPointer<vtkUnstruct
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     SMDS_NodeIteratorPtr aNodeIter = meshDS->nodesIterator();
 
+    int i = 0;
     while (aNodeIter->more()) {
+        i++;
         const SMDS_MeshNode* node = aNodeIter->next();  // why float, not double?
         double coords[3] = {double(node->X()*scale), double(node->Y()*scale), double(node->Z()*scale)};
         points->InsertPoint(node->GetID()-1, coords);
         // memory is allocated by VTK points size for max node id, not for point count
         // if the SMESH mesh has gaps in node numbering, points without any element assignment will be inserted in these point gaps too
         // this needs to be taken into account on node mapping when FreeCAD FEM results are exported to vtk
+        int ndid = node->GetID();
+        // fill gaps with 0,0,0
+        while (i < ndid) {
+            double zerocoords[3] = {0, 0 ,0};
+            points->InsertPoint(i-1, zerocoords);
+            i++;
+        }
+        points->InsertPoint(ndid-1, coords);  // memory is allocated by VTK points size = max node id, points will be insterted in SMESH point gaps too
     }
     grid->SetPoints(points);
     // nodes debugging
