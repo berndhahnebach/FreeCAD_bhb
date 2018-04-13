@@ -1849,11 +1849,34 @@ void FemMesh::read(const char *FileName)
 
 void FemMesh::writeABAQUS(const std::string &Filename, int elemParam, bool groupParam) const
 {
+    /* var1 ich uebergebe nur elnummern:
+     * die infos hole ich vorher aus mesh und analysis objekten
+     * mein bsp
+     * vol hat es keine: nicht ins dict
+     * faces all: leer ins dict
+     * edges list of int: [2, 4, 5, 6]
+     * WORKS :-)
+     * 
+     * var2 eltyp soll auch uebergeben werden, und nummern?! later
+     */
+
+    static std::map<std::string, std::vector<int> > elemDefinedMap;
+    std::vector<int> facesNo;   // standard constructur will make an empty list
+    elemDefinedMap.insert(std::make_pair("faces", facesNo));
+    std::vector<int> edgesNo = boost::assign::list_of(2)(4)(5)(6);
+    elemDefinedMap.insert(std::make_pair("edges", edgesNo));
+    if ( elemDefinedMap.empty() )
+        ;
+    else
+        elemParam = 3;
+
     /*
      * elemParam:
      * 0 = all elements
      * 1 = highest elements only
      * 2 = FEM elements only (only edges not belonging to faces and faces not belonging to volumes)
+     * 3 = Given FEM mesh elements only (element numbers depending on user or geometry input. Mostly used for mixed meshes analysis).
+     *     will be triggered automaticly if a non empty map was given as method parameter
      *
      * groupParam:
      * true = write group data
@@ -2039,6 +2062,35 @@ void FemMesh::writeABAQUS(const std::string &Filename, int elemParam, bool group
             }
         }
     }
+    if (elemParam == 3) {
+        std::map<std::string, std::vector<int> > ::iterator it;
+        it = elemDefinedMap.find("faces");
+        if ( it != elemDefinedMap.end() ) {
+            Base::Console().Message("Found faces list in parameter.\n");
+            if ( (it->second).empty() ) {
+                Base::Console().Message("faces list is empty, all faces exported.\n");
+                // we're going to fill the elementsMapFac with all faces
+                SMDS_FaceIteratorPtr aFaceIter = myMesh->GetMeshDS()->facesIterator();
+                while (aFaceIter->more()) {
+                    const SMDS_MeshFace* aFace = aFaceIter->next();
+                    std::pair<int, std::vector<int> > apair;
+                    apair.first = aFace->GetID();
+                    int numNodes = aFace->NbNodes();
+                    std::map<int, std::string>::iterator it = faceTypeMap.find(numNodes);
+                    if (it != faceTypeMap.end()) {
+                        const std::vector<int>& order = elemOrderMap[it->second];
+                        for (std::vector<int>::const_iterator jt = order.begin(); jt != order.end(); ++jt)
+                            apair.second.push_back(aFace->GetNode(*jt)->GetID());
+                        elementsMapFac[it->second].insert(apair);
+                    }
+                }
+            }
+            else {
+                Base::Console().Message("faces list is NOT empty, only faces list entries are exported.\n");
+                 // TODO
+            }
+        }
+    }
 
     // get edges
     ElementsMap elementsMapEdg;  // empty edges map used for elemParam == 1 and either elementMapVol or elementsMapFac are not empty
@@ -2077,6 +2129,38 @@ void FemMesh::writeABAQUS(const std::string &Filename, int elemParam, bool group
             }
         }
     }
+    if (elemParam == 3) {
+        std::map<std::string, std::vector<int> > ::iterator it;
+        it = elemDefinedMap.find("edges");
+        if ( it != elemDefinedMap.end() ) {
+            Base::Console().Message("Found edges list in parameter.\n");
+            if ( (it->second).empty() ) {
+                Base::Console().Message("edges list is empty, all edges exported.\n");
+                // TODO
+            }
+            else {
+                Base::Console().Message("edges list is NOT empty, only edges list entries are exported.\n");
+                // we're going to fill the elementsMapEdg with the edges from edges list
+                std::vector<int> definedEdges = it->second;  // only the edges inside this vector should be written
+                SMDS_EdgeIteratorPtr aEdgeIter = myMesh->GetMeshDS()->edgesIterator();
+                while (aEdgeIter->more()) {
+                    const SMDS_MeshEdge* aEdge = aEdgeIter->next();
+                    std::pair<int, std::vector<int> > apair;
+                    apair.first = aEdge->GetID();
+                    if (std::find(definedEdges.begin(), definedEdges.end(), apair.first) != definedEdges.end()) {  // check if the edge id is in defined edges
+                        int numNodes = aEdge->NbNodes();
+                        std::map<int, std::string>::iterator it = edgeTypeMap.find(numNodes);
+                        if (it != edgeTypeMap.end()) {
+                            const std::vector<int>& order = elemOrderMap[it->second];
+                            for (std::vector<int>::const_iterator jt = order.begin(); jt != order.end(); ++jt)
+                                apair.second.push_back(aEdge->GetNode(*jt)->GetID());
+                            elementsMapEdg[it->second].insert(apair);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     // write all data to file
     // take also care of special characters in path https://forum.freecadweb.org/viewtopic.php?f=10&t=37436
@@ -2090,6 +2174,7 @@ void FemMesh::writeABAQUS(const std::string &Filename, int elemParam, bool group
         case 0: anABAQUS_Output << "** all mesh elements." << std::endl << std::endl; break;
         case 1: anABAQUS_Output << "** highest dimension mesh elements only." << std::endl << std::endl; break;
         case 2: anABAQUS_Output << "** FEM mesh elements only (edges if they do not belong to faces and faces if they do not belong to volumes)." << std::endl << std::endl; break;
+        case 3: anABAQUS_Output << "** Given FEM mesh elements only (element numbers depending on user or geometry input. Mostly used for mixed meshes analysis)." << std::endl << std::endl; break;
         default:
             anABAQUS_Output << "** Problem on writing" << std::endl;
             anABAQUS_Output.close();
