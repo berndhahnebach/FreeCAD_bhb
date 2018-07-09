@@ -1,7 +1,7 @@
 #!/bin/bash
 # That script creates Materials.ods file from all FCMat files in current directory
 
-FCMAT_DIR="../"
+FCMAT_DIR="../../StandardMaterial"
 MATERIALS_FILE=Materials
 
 # Remove existing $MATERIALS_FILE.csv
@@ -11,7 +11,7 @@ then
 fi
 
 # Create new Materials.csv from all FCMat files
-ls $FCMAT_DIR*.FCMat | xargs -I [] ./FCMat2csv.sh [] && ls *.csv | xargs -I [] cat [] | awk "NR==1; NR%2 == 0" > $MATERIALS_FILE.csv
+ls $FCMAT_DIR/*.FCMat | xargs -I [] ./FCMat2csv.sh [] && ls *.csv | xargs -I [] cat [] | awk "NR==1; NR%2 == 0" > $MATERIALS_FILE.csv
 
 # Check for unoconv
 which unoconv 2>&1 > /dev/null || ( echo "unoconv not found. Please install it first!" && exit 1 )

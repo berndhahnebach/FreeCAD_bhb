@@ -1,6 +1,7 @@
 #!/bin/bash
 # That script converts Materials.ods file into FCMat files. The result files are saved in FCMAT_OUTPUT_DIR
 
+FCMAT_DIR="../../StandardMaterial"
 FCMAT_OUTPUT_DIR=FCMats
 MATERIALS_FILE=Materials
 
@@ -46,11 +47,15 @@ do
 	echo "Generating material file: " $FCMAT_OUTPUT_DIR/$FCMAT_FILE.FCMat
 	touch $FCMAT_OUTPUT_DIR/$FCMAT_FILE.FCMat
 
-	if [ -f "../$FCMAT_FILE.FCMat" ]
+	MATCARDFILE=$FCMAT_DIR/$FCMAT_FILE.FCMat
+	# echo $MATCARDFILE
+	if [ -f $MATCARDFILE ]
 	then
-		head -n 5 ../$FCMAT_FILE.FCMat > $FCMAT_OUTPUT_DIR/$FCMAT_FILE.FCMat
+		# echo "Header will be taken from existing mat card file"
+		head -n 5 $MATCARDFILE > $FCMAT_OUTPUT_DIR/$FCMAT_FILE.FCMat
         else
                 cp new_material_header $FCMAT_OUTPUT_DIR/$FCMAT_FILE.FCMat
+                # echo "Header will be taken from new material header file"
 	fi
 
 	echo "[FCMat]" >> $FCMAT_OUTPUT_DIR/$FCMAT_FILE.FCMat
