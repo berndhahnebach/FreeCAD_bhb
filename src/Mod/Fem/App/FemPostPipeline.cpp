@@ -236,6 +236,13 @@ FemPostObject* FemPostPipeline::getLastPostObject() {
     return static_cast<FemPostObject*>(Filter.getValues().back());
 }
 
+/*
+FemPostObject* FemPostPipeline::getDataInfo() {
+    Base::Console().Log("data info in obj cpp \n");
+    return;
+}
+*/
+
 bool FemPostPipeline::holdsPostObject(FemPostObject* obj) {
 
     std::vector<App::DocumentObject*>::const_iterator it = Filter.getValues().begin();

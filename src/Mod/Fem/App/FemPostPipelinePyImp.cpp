@@ -64,6 +64,15 @@ PyObject* FemPostPipelinePy::load(PyObject *args)
     Py_Return;
 }
 
+Py::Long FemPostPipelinePy::getDataInfo(void) const
+{
+    if (!PyArg_ParseTuple(args, ""))
+        return 0;
+    Base::Console().Log("data info in PyImp \n");
+    return 88;
+
+}
+
 PyObject* FemPostPipelinePy::getLastPostObject(PyObject *args)
 {
     if (!PyArg_ParseTuple(args, ""))

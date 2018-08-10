@@ -522,8 +522,10 @@ FemPostWarpVectorFilter::~FemPostWarpVectorFilter() {
 DocumentObjectExecReturn* FemPostWarpVectorFilter::execute(void) {
 
     std::string val;
-    if(m_vectorFields.getEnums() && Vector.getValue() >= 0)
+    if(m_vectorFields.getEnums() && Vector.getValue() >= 0) {
         val = Vector.getValueAsString();
+        Base::Console().Message("val: %s \n", val);
+    }
 
     std::vector<std::string> array;
 

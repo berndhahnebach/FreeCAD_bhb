@@ -33,5 +33,10 @@
                 <UserDocu>Check if this pipeline holds a given post-processing object</UserDocu>
             </Documentation>
         </Methode>
-    </PythonExport>
+        <Attribute Name="DataInfo" ReadOnly="true">
+            <Documentation>
+                <UserDocu>try to get some informations about the pipeline Data</UserDocu>
+            </Documentation>
+        </Attribute>
+   </PythonExport>
 </GenerateModel>

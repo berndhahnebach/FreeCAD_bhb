@@ -64,6 +64,7 @@ public:
     void load(FemResultObject* res);
 
     //Pipeline handling
+    //FemPostObject* getDataInfo();
     FemPostObject* getLastPostObject();
     bool           holdsPostObject(FemPostObject* obj);
 
