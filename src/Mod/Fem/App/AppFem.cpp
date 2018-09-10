@@ -184,6 +184,7 @@ PyMOD_INIT_FUNC(Fem)
     Fem::FemPostCutFilter                     ::init();
     Fem::FemPostDataAlongLineFilter           ::init();
     Fem::FemPostDataAtPointFilter             ::init();
+    Fem::FemPostGlyphFilter                   ::init();
     Fem::FemPostScalarClipFilter              ::init();
     Fem::FemPostWarpVectorFilter              ::init();
 

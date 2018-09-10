@@ -106,6 +106,19 @@ protected:
     virtual void setupTaskDialog(TaskDlgPost* dlg);
 };
 
+class FemGuiExport ViewProviderFemPostGlyph : public ViewProviderFemPostObject {
+
+    PROPERTY_HEADER(FemGui::ViewProviderFemPostGlyph);
+
+public:
+    /// constructor.
+    ViewProviderFemPostGlyph();
+    ~ViewProviderFemPostGlyph();
+
+protected:
+    virtual void setupTaskDialog(TaskDlgPost* dlg);
+};
+
 } //namespace FemGui
 
 

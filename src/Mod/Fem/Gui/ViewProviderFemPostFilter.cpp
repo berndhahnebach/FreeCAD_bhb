@@ -149,3 +149,23 @@ void ViewProviderFemPostCut::setupTaskDialog(TaskDlgPost* dlg) {
     //add the display options
     FemGui::ViewProviderFemPostObject::setupTaskDialog(dlg);
 }
+
+PROPERTY_SOURCE(FemGui::ViewProviderFemPostGlyph, FemGui::ViewProviderFemPostObject)
+
+ViewProviderFemPostGlyph::ViewProviderFemPostGlyph() {
+
+    sPixmap = "fem-post-filter-glyph";
+}
+
+ViewProviderFemPostGlyph::~ViewProviderFemPostGlyph() {
+
+}
+
+void ViewProviderFemPostGlyph::setupTaskDialog(TaskDlgPost* dlg) {
+
+    //add the function box
+    dlg->appendBox(new TaskPostGlyph(dlg->getView()));
+
+    //add the display options
+    FemGui::ViewProviderFemPostObject::setupTaskDialog(dlg);
+}

@@ -36,6 +36,10 @@
 #include <App/DocumentObjectPy.h>
 
 
+#include <vtkFieldData.h>
+#include <vtkPointData.h>
+#include <vtkMath.h>
+
 using namespace Fem;
 using namespace App;
 
@@ -622,4 +626,254 @@ DocumentObjectExecReturn* FemPostCutFilter::execute(void) {
         return StdReturn;
 
     return Fem::FemPostFilter::execute();
+}
+
+PROPERTY_SOURCE(Fem::FemPostGlyphFilter, Fem::FemPostFilter)
+
+FemPostGlyphFilter::FemPostGlyphFilter(void): FemPostFilter() {
+
+    ADD_PROPERTY_TYPE(Factor, (0), "Glyph", App::Prop_None, "The factor by which the Glyph is scaled and colored");
+    ADD_PROPERTY_TYPE(Vector, (long(0)), "Glyph", App::Prop_None, "The field of vectors");
+    ADD_PROPERTY_TYPE(GlyphType, (long(0)), "Glyph", App::Prop_None, "The selected glyph");
+
+    arrowSource = vtkSmartPointer<vtkArrowSource>::New();
+    glyphMethod = calcGlyphArrow;
+
+    programmableGlyph = vtkSmartPointer<vtkProgrammableGlyphFilter>::New();
+    programmableGlyph->SetSourceConnection(arrowSource->GetOutputPort());
+    programmableGlyph->SetGlyphMethod(glyphMethod, this);
+
+    namesGlyphTypes.push_back("Arrow (single-headed)");
+    namesGlyphTypes.push_back("Arrow (double-headed)");
+
+    m_glyphTypes.setEnums(namesGlyphTypes);
+    GlyphType.setValue(m_glyphTypes);
+
+
+    FilterPipeline glyph;
+
+    glyph.source         = programmableGlyph;
+    glyph.target         = programmableGlyph;
+    addFilterPipeline(glyph, "glyph");
+    setActiveFilterPipeline("glyph");
+}
+
+FemPostGlyphFilter::~FemPostGlyphFilter() {
+
+}
+
+
+DocumentObjectExecReturn* FemPostGlyphFilter::execute(void) {
+
+    std::string val;
+    if(m_vectorFields.getEnums() && Vector.getValue() >= 0)
+        val = Vector.getValueAsString();
+
+    std::vector<std::string> array;
+
+    vtkSmartPointer<vtkDataObject> data = getInputData();
+    if(!data || !data->IsA("vtkDataSet"))
+        return StdReturn;
+
+    vtkDataSet* dset = vtkDataSet::SafeDownCast(data);
+    vtkPointData* pd = dset->GetPointData();
+
+    for(int i=0; i<pd->GetNumberOfArrays(); ++i) {
+        if(pd->GetArray(i)->GetNumberOfComponents()==3)
+            array.push_back(pd->GetArrayName(i));
+    }
+
+    App::Enumeration empty;
+    Vector.setValue(empty);
+    m_vectorFields.setEnums(array);
+    Vector.setValue(m_vectorFields);
+
+    std::vector<std::string>::iterator it = std::find(array.begin(), array.end(), val);
+    if(!val.empty() && it != array.end())
+        Vector.setValue(val.c_str());
+
+    //do the same with the glyphs
+    std::string glyphVal;
+    if(m_glyphTypes.getEnums() && GlyphType.getValue() >= 0)
+        glyphVal = GlyphType.getValueAsString();
+
+    std::vector<std::string>::iterator it2 = std::find(namesGlyphTypes.begin(), namesGlyphTypes.end(), glyphVal);
+    if(!glyphVal.empty() && it2 != namesGlyphTypes.end())
+       GlyphType.setValue(glyphVal.c_str());
+
+    //recalculate the filter
+    return Fem::FemPostFilter::execute();
+}
+
+void FemPostGlyphFilter::onChanged(const Property* prop)
+{
+    if (prop == &Factor) {
+        scale = Factor.getValue();
+    }
+    else if (prop == &Vector && (Vector.getValue() >= 0)) {
+        m_vectorFields.setValue(Vector.getValueAsString());
+    }
+    else if (prop == &GlyphType && (GlyphType.getValue() >= 0)) {
+        std::string glyph = GlyphType.getValueAsString();
+        if (m_glyphTypes.isValid()){
+            m_glyphTypes.setValue(glyph);
+            if (m_glyphTypes.isValue("Arrow (double-headed)")){
+                doubleheaded= true;
+                glyphMethod = calcGlyphArrow;
+            }
+            else if (m_glyphTypes.isValue("Arrow (single-headed)")){
+                doubleheaded = false;
+                glyphMethod = calcGlyphArrow;
+            }
+        }
+    }
+
+    //we need to modify the filter a bit, so that it knows something changed
+    programmableGlyph->SetGlyphMethod(NULL, NULL);
+    programmableGlyph->SetGlyphMethod(glyphMethod, this);
+
+    Fem::FemPostFilter::onChanged(prop);
+}
+
+short int FemPostGlyphFilter::mustExecute(void) const {
+
+    if(Factor.isTouched() ||
+       Vector.isTouched() ||
+       GlyphType.isTouched()) {
+
+        return 1;
+    }
+    else return App::DocumentObject::mustExecute();
+}
+
+void FemPostGlyphFilter::calcGlyphArrow(void *arg){
+    FemPostGlyphFilter *parent = (FemPostGlyphFilter*) arg;
+
+    vtkProgrammableGlyphFilter *programmableGlyphFilter = (vtkProgrammableGlyphFilter*) parent->programmableGlyph;
+
+    if (!programmableGlyphFilter)
+    {
+        return;
+    }
+
+    //aquire Data
+    vtkPointData* pd = programmableGlyphFilter->GetPointData();
+    const int pid = programmableGlyphFilter->GetPointId();
+
+    //translation
+    double position[3];
+    programmableGlyphFilter->GetPoint(position);
+
+    //scale
+    const double scale = parent->scale;
+
+    // if (pid == 0)
+    //     std::cerr << "Vector: " << parent->m_vectorFields.getInt() << ", doubleheaded: " << parent->doubleheaded << ", Factor: " << scale << "\n";
+
+    //orientation
+    double orientvector[3];
+    if (parent->m_vectorFields.isValid())
+    {
+        pd->GetArray(parent->m_vectorFields.getInt())->GetTuple(pid, orientvector);
+    }
+    else
+    {
+        return;
+    }
+
+    //magnitude
+    const double magnitude = vtkMath::Norm(orientvector);
+    //std::cerr << magnitude << std::endl;
+
+
+    //global arrow with the parameters
+    const vtkSmartPointer<vtkArrowSource> arrowSource = parent->arrowSource;
+
+    //setup transformation
+    vtkSmartPointer<vtkTransform> transform = vtkSmartPointer<vtkTransform>::New();
+    transform->Identity();
+    transform->Translate(position[0], position[1], position[2]);
+    double vNew[3];
+
+    // if statement from paraviews vtkArrowGlyphFilter.cxx
+    if (magnitude > 0.0)
+    {
+        // if there is no y or z component
+        if (orientvector[1] == 0.0 && orientvector[2] == 0.0)
+        {
+            if (orientvector[0] < 0)
+            { // just flip x if we need to
+                transform->RotateWXYZ(180.0,0,1,0);
+            }
+        }
+        else
+        {
+            vNew[0] = (orientvector[0] + magnitude ) / 2.0 ;
+            vNew[1] = orientvector[1] / 2.0;
+            vNew[2] = orientvector[2] / 2.0;
+            transform->RotateWXYZ(180.0, vNew[0], vNew[1], vNew[2]);
+        }
+    }
+    //end -- thanks paraview
+    transform->Update();
+
+    vtkSmartPointer<vtkArrowSource> localArrow = vtkSmartPointer<vtkArrowSource>::New();
+    vtkSmartPointer<vtkAlgorithm> glyph;
+    if (parent->doubleheaded) {
+        //take settings from arrowSource and scale them, so that the length is 1 again
+        localArrow->SetTipLength(arrowSource->GetTipLength()*2.0);
+        localArrow->SetTipRadius(arrowSource->GetTipRadius()*2.0);
+        localArrow->SetTipResolution(arrowSource->GetTipResolution());
+        localArrow->SetShaftRadius(arrowSource->GetShaftRadius()*2.0);
+        localArrow->SetShaftResolution(arrowSource->GetShaftResolution());
+
+        //inversion is only necessary if we're using double-headed arrows, since otherwise the orientation will do the inversion for us
+        if (magnitude < 0)
+            localArrow->InvertOn();
+
+        localArrow->Update();
+
+        //make the double-headed arrow
+        vtkSmartPointer<vtkPolyData> arrow1 = vtkSmartPointer<vtkPolyData>::New();
+        arrow1->ShallowCopy(localArrow->GetOutput());
+        vtkSmartPointer<vtkTransform> transformArrow = vtkSmartPointer<vtkTransform>::New();
+        transformArrow->Identity();
+        transformArrow->RotateZ(180);
+        transformArrow->Update();
+        vtkSmartPointer<vtkTransformPolyDataFilter> transformArrowFilter = vtkSmartPointer<vtkTransformPolyDataFilter>::New();
+        transformArrowFilter->SetTransform(transformArrow);
+        transformArrowFilter->SetInputConnection(localArrow->GetOutputPort());
+        transformArrowFilter->Update();
+        vtkSmartPointer<vtkPolyData> arrow2 = vtkSmartPointer<vtkPolyData>::New();
+        arrow2->ShallowCopy(transformArrowFilter->GetOutput());
+        vtkSmartPointer<vtkAppendPolyData> doubleHeadedArrow = vtkSmartPointer<vtkAppendPolyData>::New();
+        doubleHeadedArrow->AddInputData(arrow1);
+        doubleHeadedArrow->AddInputData(arrow2);
+        doubleHeadedArrow->Update();
+        glyph = doubleHeadedArrow;
+
+        transform->Scale(.5 * scale,.5 * scale,.5 * scale);
+        transform->Update();
+    }
+    else {
+        //just one arrow --> don't mess with scaling
+        localArrow->SetTipLength(arrowSource->GetTipLength());
+        localArrow->SetTipRadius(arrowSource->GetTipRadius());
+        localArrow->SetTipResolution(arrowSource->GetTipResolution());
+        localArrow->SetShaftRadius(arrowSource->GetShaftRadius());
+        localArrow->SetShaftResolution(arrowSource->GetShaftResolution());
+        localArrow->Update();
+        glyph = localArrow;
+
+        transform->Scale(scale,scale,scale);
+        transform->Update();
+    }
+
+    //apply the transformation to the glyph
+    vtkSmartPointer<vtkTransformFilter> transformFilter = vtkSmartPointer<vtkTransformFilter>::New();
+    transformFilter->SetTransform(transform);
+    transformFilter->SetInputConnection(glyph->GetOutputPort());
+    transformFilter->Update();
+
+    programmableGlyphFilter->SetSourceConnection(transformFilter->GetOutputPort());
 }

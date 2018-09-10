@@ -40,6 +40,16 @@
 #include <vtkProbeFilter.h>
 #include <vtkThreshold.h>
 
+
+#include <vtkSmartPointer.h>
+#include <vtkTransform.h>
+#include <vtkTransformFilter.h>
+#include <vtkTransformPolyDataFilter.h>
+#include <vtkAppendPolyData.h>
+#include <vtkPolyData.h>
+#include <vtkArrowSource.h>
+#include <vtkProgrammableGlyphFilter.h>
+
 namespace Fem
 {
 
@@ -239,6 +249,48 @@ protected:
 private:
     vtkSmartPointer<vtkCutter>   m_cutter;
 };
+
+
+class AppFemExport FemPostGlyphFilter : public FemPostFilter {
+
+        PROPERTY_HEADER(Fem::FemPostGlyphFilter);
+
+    public:
+        FemPostGlyphFilter(void);
+        virtual ~FemPostGlyphFilter();
+
+        App::PropertyEnumeration GlyphType;
+        App::PropertyEnumeration Vector;
+        App::PropertyFloat Factor;
+
+        virtual const char* getViewProviderName(void) const {
+            return "FemGui::ViewProviderFemPostGlyph";
+        }
+        virtual short int mustExecute(void) const;
+
+    protected:
+        virtual App::DocumentObjectExecReturn* execute(void);
+        virtual void onChanged(const App::Property* prop);
+
+
+    private:
+        std::vector<std::string>                            namesGlyphTypes;
+
+        vtkSmartPointer<vtkArrowSource>                     arrowSource;
+        vtkSmartPointer<vtkProgrammableGlyphFilter>         programmableGlyph;
+        App::Enumeration                                    m_vectorFields;
+        App::Enumeration                                    m_glyphTypes;
+
+        static void calcGlyphArrow(void *arg);
+        //glyph parameters
+        bool doubleheaded = true;
+        double scale = 1.0;
+        vtkProgrammableGlyphFilter::ProgrammableMethodCallbackType  glyphMethod;
+
+
+    };
+
+
 
 } //namespace Fem
 
