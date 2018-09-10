@@ -39,6 +39,7 @@ class Ui_TaskPostDataAtPoint;
 class Ui_TaskPostScalarClip;
 class Ui_TaskPostWarpVector;
 class Ui_TaskPostCut;
+class Ui_TaskPostGlyph;
 
 class SoFontStyle;
 class SoText2;
@@ -373,6 +374,33 @@ private:
     FunctionWidget* fwidget;
 };
 
+class TaskPostGlyph : public TaskPostBox {
+    
+        Q_OBJECT
+    
+    public:
+        TaskPostGlyph(Gui::ViewProviderDocumentObject* view, QWidget* parent = 0);
+        virtual ~TaskPostGlyph();
+    
+        virtual void applyPythonCode();
+    
+    private Q_SLOTS:
+        void on_Slider_valueChanged(int v);
+        void on_Value_valueChanged(double v);
+        void on_Max_valueChanged(double);
+        void on_Min_valueChanged(double);
+        void on_Vector_currentIndexChanged(int idx);
+        void on_GlyphType_currentIndexChanged(int idx);
+    
+    private:
+        QWidget* proxy;
+        Ui_TaskPostGlyph* ui;
+    };
+
+
 } //namespace FemGui
+
+
+
 
 #endif // GUI_TASKVIEW_TaskPostDisplay_H

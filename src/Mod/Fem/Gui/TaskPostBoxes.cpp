@@ -50,6 +50,7 @@
 #include "ui_TaskPostScalarClip.h"
 #include "ui_TaskPostWarpVector.h"
 #include "ui_TaskPostCut.h"
+#include "ui_TaskPostGlyph.h"
 #include "TaskPostBoxes.h"
 #include "ViewProviderFemPostObject.h"
 #include "ViewProviderFemPostFunction.h"
@@ -1278,5 +1279,100 @@ void TaskPostCut::on_FunctionBox_currentIndexChanged(int idx) {
     }
     recompute();
 }
+
+//############################################################################################
+
+TaskPostGlyph::TaskPostGlyph(ViewProviderDocumentObject* view, QWidget* parent) :
+    TaskPostBox(view, Gui::BitmapFactory().pixmap("fem-femmesh-create-node-by-poly"), tr("Glyph options"), parent) {
+
+    assert(view->isDerivedFrom(ViewProviderFemPostGlyph::getClassTypeId()));
+
+    //we load the views widget
+    proxy = new QWidget(this);
+    ui = new Ui_TaskPostGlyph();
+    ui->setupUi(proxy);
+    QMetaObject::connectSlotsByName(this);
+    this->groupLayout()->addWidget(proxy);
+
+    //load the default values
+    updateEnumerationList(getTypedObject<Fem::FemPostGlyphFilter>()->Vector, ui->Vector);
+    updateEnumerationList(getTypedObject<Fem::FemPostGlyphFilter>()->GlyphType, ui->GlyphType);
+
+    double value = static_cast<Fem::FemPostGlyphFilter*>(getObject())->Factor.getValue();
+        //don't forget to sync the slider
+    ui->Value->blockSignals(true);
+    ui->Value->setValue( value);
+    ui->Value->blockSignals(false);
+    //don't forget to sync the slider
+    ui->Max->blockSignals(true);
+    ui->Max->setValue( value==0 ? 10 : value * 10.);
+    ui->Max->blockSignals(false);
+    ui->Min->blockSignals(true);
+    ui->Min->setValue( value==0 ? 0 : value / 10.);
+    ui->Min->blockSignals(false);
+    ui->Slider->blockSignals(true);
+    //ui->Slider->setValue((value - ui->Min->value()) / (ui->Max->value() - ui->Min->value())*100.);
+    ui->Slider->setValue(1);
+    ui->Slider->blockSignals(false);
+}
+
+TaskPostGlyph::~TaskPostGlyph() {
+
+}
+
+void TaskPostGlyph::applyPythonCode() {
+
+}
+
+void TaskPostGlyph::on_Vector_currentIndexChanged(int idx) {
+
+    static_cast<Fem::FemPostGlyphFilter*>(getObject())->Vector.setValue(idx);
+    recompute();
+}
+
+void TaskPostGlyph::on_GlyphType_currentIndexChanged(int idx) {
+
+    static_cast<Fem::FemPostGlyphFilter*>(getObject())->GlyphType.setValue(idx);
+    recompute();
+}
+
+void TaskPostGlyph::on_Slider_valueChanged(int v) {
+
+    double val = ui->Min->value() + (ui->Max->value()-ui->Min->value())/100.*v;
+    static_cast<Fem::FemPostGlyphFilter*>(getObject())->Factor.setValue(val);
+    recompute();
+
+    //don't forget to sync the spinbox
+    ui->Value->blockSignals(true);
+    ui->Value->setValue( val );
+    ui->Value->blockSignals(false);
+}
+
+void TaskPostGlyph::on_Value_valueChanged(double v) {
+
+    static_cast<Fem::FemPostGlyphFilter*>(getObject())->Factor.setValue(v);
+    recompute();
+
+    //don't forget to sync the slider
+    ui->Slider->blockSignals(true);
+    ui->Slider->setValue(int((v - ui->Min->value()) / (ui->Max->value() - ui->Min->value())*100.));
+    ui->Slider->blockSignals(false);
+}
+
+void TaskPostGlyph::on_Max_valueChanged(double) {
+
+    ui->Slider->blockSignals(true);
+    ui->Slider->setValue((ui->Value->value() - ui->Min->value()) / (ui->Max->value() - ui->Min->value())*100.);
+    ui->Slider->blockSignals(false);
+}
+
+void TaskPostGlyph::on_Min_valueChanged(double) {
+
+    ui->Slider->blockSignals(true);
+    ui->Slider->setValue((ui->Value->value() - ui->Min->value()) / (ui->Max->value() - ui->Min->value())*100.);
+    ui->Slider->blockSignals(false);
+}
+
+//############################################################################################
 
 #include "moc_TaskPostBoxes.cpp"

@@ -92,6 +92,7 @@ if(BUILD_FEM_VTK)
         TaskPostDataAtPoint.ui
         TaskPostScalarClip.ui
         TaskPostWarpVector.ui
+        TaskPostGlyph.ui
         TaskPostCut.ui
         PlaneWidget.ui
         SphereWidget.ui
@@ -272,6 +273,7 @@ if(BUILD_FEM_VTK)
         TaskPostScalarClip.ui
         TaskPostDisplay.ui
         TaskPostWarpVector.ui
+        TaskPostGlyph.ui
         TaskPostCut.ui
         TaskPostBoxes.h
         TaskPostBoxes.cpp
