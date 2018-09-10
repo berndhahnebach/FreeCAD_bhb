@@ -1303,6 +1303,32 @@ bool CmdFemPostDataAtPointFilter::isActive(void)
 
 
 //================================================================================================
+DEF_STD_CMD_A(CmdFemPostGlyphFilter)
+
+CmdFemPostGlyphFilter::CmdFemPostGlyphFilter()
+  : Command("FEM_PostFilterGlyph")
+{
+    sAppModule      = "Fem";
+    sGroup          = QT_TR_NOOP("Fem");
+    sMenuText       = QT_TR_NOOP("Glyph Filter");
+    sToolTipText    = QT_TR_NOOP("Displays a Glyph to show a vectorfield");
+    sWhatsThis      = "FEM_PostFilterGlyph";
+    sStatusTip      = sToolTipText;
+    sPixmap         = "FemWorkbench";  // icon will be added later
+}
+
+void CmdFemPostGlyphFilter::activated(int)
+{
+    setupFilter(this, "Glyph");
+}
+
+bool CmdFemPostGlyphFilter::isActive(void)
+{
+    return hasActiveDocument();
+}
+
+
+//================================================================================================
 DEF_STD_CMD_A(CmdFemPostLinearizedStressesFilter)
 
 CmdFemPostLinearizedStressesFilter::CmdFemPostLinearizedStressesFilter()
@@ -1698,6 +1724,7 @@ void CreateFemCommands(void)
     rcCmdMgr.addCommand(new CmdFemPostCutFilter);
     rcCmdMgr.addCommand(new CmdFemPostDataAlongLineFilter);
     rcCmdMgr.addCommand(new CmdFemPostDataAtPointFilter);
+    rcCmdMgr.addCommand(new CmdFemPostGlyphFilter);
     rcCmdMgr.addCommand(new CmdFemPostLinearizedStressesFilter);
     rcCmdMgr.addCommand(new CmdFemPostScalarClipFilter);
     rcCmdMgr.addCommand(new CmdFemPostWarpVectorFilter);
