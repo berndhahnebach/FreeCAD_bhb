@@ -70,6 +70,8 @@ SET(Python_SRCS
 
 
 if(BUILD_FEM_VTK)
+    find_package(VTK REQUIRED)
+    include(${VTK_USE_FILE})
     SET(Python_SRCS
         ${Python_SRCS}
         FemPostPipelinePy.xml
