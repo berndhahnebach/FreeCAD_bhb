@@ -1314,7 +1314,7 @@ CmdFemPostGlyphFilter::CmdFemPostGlyphFilter()
     sToolTipText    = QT_TR_NOOP("Displays a Glyph to show a vectorfield");
     sWhatsThis      = "FEM_PostFilterGlyph";
     sStatusTip      = sToolTipText;
-    sPixmap         = "FemWorkbench";  // icon will be added later
+    sPixmap         = "fem-post-filter-glyph";
 }
 
 void CmdFemPostGlyphFilter::activated(int)

@@ -67,6 +67,7 @@
         <file>icons/FEM_PostFilterCutFunction.svg</file>
         <file>icons/FEM_PostFilterDataAlongLine.svg</file>
         <file>icons/FEM_PostFilterDataAtPoint.svg</file>
+        <file>icons/fem-post-filter-glyph.svg</file>
         <file>icons/FEM_PostFilterLinearizedStresses.svg</file>
         <file>icons/FEM_PostFilterWarp.svg</file>
         <file>icons/FEM_ResultShow.svg</file>
