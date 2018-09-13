@@ -151,7 +151,7 @@ protected:
     bool autoApply();
     void recompute();
 
-    static void updateEnumerationList(App::PropertyEnumeration&, QComboBox* box);
+    static void updateEnumerationList(App::PropertyEnumeration&, QComboBox* box, unsigned int idx);
 
 private:
     App::DocumentObject*              m_object;
