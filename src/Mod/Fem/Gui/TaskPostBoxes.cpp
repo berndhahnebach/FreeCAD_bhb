@@ -328,6 +328,7 @@ void TaskPostBox::updateEnumerationList(App::PropertyEnumeration& prop, QComboBo
 
     QStringList list;
     std::vector<std::string> vec = prop.getEnumVector();
+    Base::Console().Message("Property enum informations: Index = %i, Value = %s\n", prop.getValue(), (vec[prop.getValue()]).c_str());
     for(std::vector<std::string>::iterator it = vec.begin(); it != vec.end(); ++it ) {
         list.push_back(QString::fromStdString(*it));
     }
