@@ -139,6 +139,7 @@ SET(FemMesh_SRCS
 
 SET(FemObjects_SRCS
     femobjects/__init__.py
+    femobjects/_FemConstraintAutoContact.py
     femobjects/base_fempythonobject.py
     femobjects/constant_vacuumpermittivity.py
     femobjects/constraint_bodyheatsource.py
@@ -479,6 +480,7 @@ SET(FemGuiBaseModules_SRCS
 
 SET(FemGuiObjects_SRCS
     femguiobjects/__init__.py
+    femguiobjects/_ViewProviderFemConstraintAutoContact.py
     femguiobjects/readme.md
 )
 

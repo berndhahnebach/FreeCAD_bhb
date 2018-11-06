@@ -145,9 +145,19 @@ class _ConstantVacuumPermittivity(CommandManager):
         self.pixmap = "fem-solver-analysis-thermomechanical.svg"
         self.menuetext = "Constant vacuum permittivity"
         self.tooltip = "Creates a FEM constant vacuum permittivity to overwrite standard value"
-        self.is_active = "with_document"
         self.is_active = "with_analysis"
         self.do_activated = "add_obj_on_gui_noset_edit"
+
+
+class _ConstraintAutoContact(CommandManager):
+    "The FEM_AutoContact command definition"
+    def __init__(self):
+        super(_ConstraintAutoContact, self).__init__()
+        self.pixmap = "FEM_ConstraintAutocontact.svg"
+        self.menuetext = "Auto contact for compound object"
+        self.tooltip = "Creates auto contact for compound object"
+        self.is_active = "with_analysis"
+        self.do_activated = "add_obj_on_gui_set_edit"
 
 
 class _ConstraintBodyHeatSource(CommandManager):
@@ -823,7 +833,11 @@ FreeCADGui.addCommand(
     _ConstantVacuumPermittivity()
 )
 FreeCADGui.addCommand(
-    "FEM_ConstraintBodyHeatSource",
+    "FEM_AutoContact",
+    _ConstraintAutoContact()
+)
+FreeCADGui.addCommand(
+    "FEM_ConstraintBodyHeatSource"
     _ConstraintBodyHeatSource()
 )
 FreeCADGui.addCommand(
