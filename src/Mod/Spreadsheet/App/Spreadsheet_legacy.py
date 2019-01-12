@@ -23,7 +23,10 @@
 in FreeCAD, but is still there for archiving purposes."""
 
 
-import re, math, FreeCAD, FreeCADGui
+import re
+import math
+import FreeCAD
+import FreeCADGui
 from PySide import QtCore,QtGui
 DEBUG = True # set to True to show debug messages
 
@@ -1085,7 +1088,8 @@ def read(filename):
 
 def export(exportList,filename):
     "called when freecad exports a csv file"
-    import csv, Draft
+    import csv
+    import Draft
     if not exportList:
         print("Spreadsheet: Nothing to export")
         return
