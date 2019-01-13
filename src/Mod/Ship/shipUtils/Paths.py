@@ -21,7 +21,9 @@
 #*                                                                         *
 #***************************************************************************
 
-import FreeCAD, FreeCADGui, os
+import os
+import FreeCAD
+import FreeCADGui
 
 def modulePath():
     """returns the current Ship design module path
