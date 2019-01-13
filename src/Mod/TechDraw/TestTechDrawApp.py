@@ -20,7 +20,11 @@
 #   USA                                                                   *
 #**************************************************************************
 
-import FreeCAD, os, sys, unittest, Part
+import os
+import sys
+import unittest
+import FreeCAD
+import Part
 import Measure
 import TechDraw
 import time
