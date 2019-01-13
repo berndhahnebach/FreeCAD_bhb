@@ -1,6 +1,11 @@
 #!/usr/bin/python
-import os,sys,string
-import FreeCAD,FreeCADGui,Robot,RobotGui
+import os
+import sys
+import string
+import FreeCAD
+import FreeCADGui
+import Robot
+import RobotGui
 
 x = 1920
 y = 1080
