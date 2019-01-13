@@ -22,7 +22,11 @@
 #*   Milos Koutny 2010                                                     *
 #***************************************************************************/
 
-import FreeCAD, Part, os, FreeCADGui
+
+import os
+import Part
+import FreeCAD
+import FreeCADGui
 from FreeCAD import Base
 from math import *
 import ImportGui
