@@ -28,8 +28,11 @@ __url__ = "https://www.freecadweb.org"
 #  @{
 
 import os
+import multiprocessing
 import subprocess
 import sys
+import tempfile
+from platform import system
 
 import FreeCAD
 from FreeCAD import Console
@@ -100,7 +103,7 @@ class GmshTools():
             self.algorithm2D = "7"
         elif algo2D == "DelQuad":
             self.algorithm2D = "8"
-        elif algo2D == "Packing Parallelograms":
+        elif algo2D == "PackPara":
             self.algorithm2D = "9"
         else:
             self.algorithm2D = "2"
@@ -304,7 +307,6 @@ class GmshTools():
         Console.PrintMessage("  " + self.temp_file_geo + "\n")
 
     def get_gmsh_command(self):
-        from platform import system
         gmsh_std_location = FreeCAD.ParamGet(
             "User parameter:BaseApp/Preferences/Mod/Fem/Gmsh"
         ).GetBool("UseStandardGmshLocation")
@@ -909,6 +911,29 @@ class GmshTools():
         try:
             p = subprocess.Popen(
                 command_list,
+
+        gmsh_prefs = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Fem/Gmsh")
+        gmsh_additional_commands = gmsh_prefs.GetString("GmshAdditionalArguments").split()
+        gmsh_number_threads = gmsh_prefs.GetInt("GmshNumberThreads")
+
+        # determine number of threads automatically
+        if gmsh_number_threads == 0:
+            try:
+                gmsh_number_threads = multiprocessing.cpu_count()
+            except NotImplementedError:
+                # failsafe solution if number of cpus cannot be determined
+                # https://stackoverflow.com/questions/53537230/difference-between-multiprocessing-cpu-count-and-os-cpu-count
+                gmsh_number_threads = 1
+
+        # gmsh ignores gmsh_number_threads > 1 except compiled with:
+        # cmake -DENABLE_OPENMP=1 -DENABLE_MPI=1
+        commandlist = [self.gmsh_bin] + gmsh_additional_commands +\
+                      ["-nt", "%d" % (gmsh_number_threads,)] +\
+                      ["-", self.temp_file_geo]
+        # print(commandlist)
+        try:
+            p = subprocess.Popen(
+                commandlist,
                 shell=False,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
@@ -926,6 +951,18 @@ class GmshTools():
                 error = "Error executing: {}\n".format(" ".join(command_list))
             else:
                 error = "Gmsh executable not found: {}\n".format(self.gmsh_bin)
+            # avoid bare except:
+            # https://stackoverflow.com/questions/26982603/which-exceptions-besides-oserror-can-subprocess-popen-raise
+        except OSError:
+            error = "OSError executing: {}\n".format(" ".join(commandlist))
+            Console.PrintError(error)
+            self.error = True
+        except ValueError:
+            error = "Invalid arguments to subprocess.Popen: {}\n".format(" ".join(commandlist))
+            Console.PrintError(error)
+            self.error = True
+        except AssertionError:
+            error = "Assertion error in subprocess.Popen: {}\n".format(" ".join(commandlist))
             Console.PrintError(error)
             self.error = True
 
