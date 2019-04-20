@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>372</width>
-    <height>144</height>
+    <width>379</width>
+    <height>198</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -118,6 +118,51 @@
             </property>
            </widget>
           </item>
+          <item row="4" column="2">
+           <widget class="Gui::PrefLineEdit" name="le_gmsh_binary_args">
+            <property name="toolTip">
+             <string>Additional arguments to gmsh binary</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="Gui::PrefSpinBox" name="sb_gmsh_binary_nt">
+            <property name="toolTip">
+             <string>0 for automatically, &gt;0 for fixed number, uses -nt argument to gmsh</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="l_gmsh_binary_nt">
+            <property name="text">
+             <string>gmsh no. threads</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="l_gmsh_binary_args">
+            <property name="text">
+             <string>gmsh arguments</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="l_gmsh_use_med">
+            <property name="text">
+             <string>use MED files</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="Gui::PrefCheckBox" name="cb_gmsh_use_med">
+            <property name="toolTip">
+             <string>Use MED files instead of UNV</string>
+            </property>
+            <property name="text">
+             <string>Use MED files for transfer from gmsh</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -155,6 +200,16 @@
   <customwidget>
    <class>Gui::PrefFileChooser</class>
    <extends>Gui::FileChooser</extends>
+   <header>Gui/PrefWidgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::PrefSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>Gui/PrefWidgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Gui::PrefLineEdit</class>
+   <extends>QLineEdit</extends>
    <header>Gui/PrefWidgets.h</header>
   </customwidget>
  </customwidgets>
