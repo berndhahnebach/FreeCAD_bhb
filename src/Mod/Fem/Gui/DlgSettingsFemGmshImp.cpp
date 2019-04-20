@@ -46,14 +46,21 @@ DlgSettingsFemGmshImp::~DlgSettingsFemGmshImp()
 
 void DlgSettingsFemGmshImp::saveSettings()
 {
+
     ui->cb_gmsh_binary_std->onSave();
     ui->fc_gmsh_binary_path->onSave();
+    ui->cb_gmsh_use_med->onSave();
+    ui->le_gmsh_binary_args->onSave();
+    ui->sb_gmsh_binary_nt->onSave();
 }
 
 void DlgSettingsFemGmshImp::loadSettings()
 {
     ui->cb_gmsh_binary_std->onRestore();
     ui->fc_gmsh_binary_path->onRestore();
+    ui->cb_gmsh_use_med->onRestore();
+    ui->le_gmsh_binary_args->onRestore();
+    ui->sb_gmsh_binary_nt->onRestore();
 }
 
 /**
