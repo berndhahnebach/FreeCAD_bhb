@@ -49,7 +49,7 @@ class MeshGmsh(base_fempythonobject.BaseFemPythonObject):
         "Frontal",
         "BAMG",
         "DelQuad",
-        "Packing Parallelograms"
+        "PackPara"
     ]
     known_mesh_algorithm_3D = [
         "Automatic",
