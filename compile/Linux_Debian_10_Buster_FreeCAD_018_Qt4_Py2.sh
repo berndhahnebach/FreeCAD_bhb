@@ -44,7 +44,7 @@ packages_hard_dependencies="\
     debhelper                   \
     dh-exec                     \
     dh-python                   \
-    libcoin-dev               \
+    libcoin-dev                 \
     libopencv-dev               \
     libeigen3-dev               \
     libgts-bin                  \
@@ -55,7 +55,6 @@ packages_hard_dependencies="\
     libocct-ocaf-dev            \
     libocct-visualization-dev   \
     libproj-dev                 \
-    libpyside-dev               \
     libqtcore4                  \
     libqtwebkit-dev             \
     libshiboken-dev             \
@@ -66,14 +65,18 @@ packages_hard_dependencies="\
     libzipios++-dev             \
     lsb-release                 \
     occt-draw                   \
-    pyside-tools                \
     python-dev                  \
     python-ply                  \
     qt4-dev-tools               \
     qt4-qmake                   \
     swig                        \
     "
+
 sudo apt-get install -y $packages_hard_dependencies
+
+# nicht on buster
+#    pyside-tools                \
+#     libpyside-dev               \
 
 packages_opt_dependencies="\
     python-matplotlib           \

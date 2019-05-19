@@ -18,18 +18,19 @@ packages_lib="\
     libcoin80v5         \
     libcoin80-dev       \
     libeigen3-dev       \
+    libfreetype6-dev    \
+    libhdf5-dev         \
     libpyside-dev       \
     libqtcore4          \
     libshiboken-dev     \
+    libtogl-dev         \
     libxerces-c-dev     \
     libxmu-dev          \
     libxmu-headers      \
     libxmu6             \
     libxmuu-dev         \
     libxmuu1            \
-    libhdf5-dev         \
-    libtogl-dev         \
-    libfreetype6-dev    \
+    libzipios++-dev     \
     "
 sudo apt-get install -y $packages_lib
 
