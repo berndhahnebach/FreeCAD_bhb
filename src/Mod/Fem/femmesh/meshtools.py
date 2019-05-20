@@ -112,6 +112,7 @@ def get_femnodes_by_refshape(
     femmesh,
     ref
 ):
+    print(ref)
     nodes = []
     for refelement in ref[1]:
         # the following method getElement(element) does not return Solid elements
@@ -129,6 +130,13 @@ def get_femnodes_by_refshape(
         elif r.ShapeType == "Edge":
             nodes += femmesh.getNodesByEdge(r)
         elif r.ShapeType == "Face":
+            print(r)
+            print(type(r))
+            print(r.ShapeType)
+            print(r.isNull())
+            print(type(r))
+            import Part
+            print(issubclass(type(r), Part.Face))
             nodes += femmesh.getNodesByFace(r)
         elif r.ShapeType == "Solid":
             nodes += femmesh.getNodesBySolid(r)

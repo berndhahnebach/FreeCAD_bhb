@@ -256,6 +256,7 @@ SET(FemTestsApp_SRCS
     femtest/app/__init__.py
     femtest/app/support_utils.py
     femtest/app/test_ccxtools.py
+    femtest/app/test_cmdproblem.py
     femtest/app/test_common.py
     femtest/app/test_femimport.py
     femtest/app/test_material.py

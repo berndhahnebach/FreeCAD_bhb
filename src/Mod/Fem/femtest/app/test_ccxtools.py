@@ -118,6 +118,12 @@ class TestCcxTools(unittest.TestCase):
         res_obj_name = "CCX_Results"
         analysis_dir = testtools.get_fem_test_tmp_dir(self.pre_dir_name + base_name)
 
+        # test if shape is isNull() should be False
+        self.assertFalse(self.active_doc.Box.Shape.isNull(), "FemTest of box shape for analysis failed")
+        fcc_print('ShapeType: {}'.format(self.active_doc.Box.Shape.ShapeType))
+        fcc_print('isNull: {}'.format(self.active_doc.Box.Shape.isNull()))
+        fcc_print('Subclass: {}'.format(issubclass(type(face), Part.Face)))
+
         # test input file writing
         fea = self.input_file_writing_test(
             None,
