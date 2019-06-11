@@ -60,6 +60,7 @@ packages_hard_dependencies="    \
     libqt5svg5-dev              \
     libqt5webkit5-dev           \
     libqt5x11extras5-dev        \
+    libqt5xmlpatterns5-dev      \
     libshiboken2-dev            \
     libspnav-dev                \
     libvtk6-dev                 \
