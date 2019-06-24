@@ -134,7 +134,7 @@ cmake  -DBUILD_QT5=1  -DPYTHON_EXECUTABLE="/usr/bin/python3"  -DOCCT_CMAKE_FALLB
  
 # https://forum.freecadweb.org/viewtopic.php?f=10&t=30340&start=190#p274393
 # cmake                                                       \
-# -DCMAKE_INSTALL_PREFIX:PATH=/opt/local/FreeCAD-0.18         \
+#-DCMAKE_INSTALL_PREFIX:PATH=/opt/local/FreeCAD-019          \
 #-DBUILD_QT5=ON                                              \
 #-DCMAKE_BUILD_TYPE="DEBUG"                                  \
 #-DFREECAD_BUILD_DEBIAN=ON                                   \
@@ -157,8 +157,10 @@ cmake  -DBUILD_QT5=1  -DPYTHON_EXECUTABLE="/usr/bin/python3"  -DOCCT_CMAKE_FALLB
 
 make -j 2
 sudo make install
-sudo ln -s /opt/local/FreeCAD-0.18/bin/FreeCAD /usr/local/bin/FreeCAD  # make link
-sudo ln -s /opt/local/FreeCAD-0.18/bin/FreeCADCmd /usr/local/bin/FreeCADCmd  # make link
+
+# only needed if install path is set to /opt/local ... 
+# sudo ln -s /opt/local/FreeCAD-019/bin/FreeCAD /usr/local/bin/FreeCAD  # make link
+# sudo ln -s /opt/local/FreeCAD-019/bin/FreeCADCmd /usr/local/bin/FreeCADCmd  # make link
 
 
 # *******************************************
