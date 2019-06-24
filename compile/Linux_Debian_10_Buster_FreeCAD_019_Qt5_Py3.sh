@@ -76,6 +76,7 @@ packages_hard_dependencies="    \
     python3-pyside2.qtwidgets   \
     python3-pyside2uic          \
     python3-six                 \
+    python3-yaml                \
     qtbase5-dev                 \
     qttools5-dev                \
     qtwebengine5-dev            \
