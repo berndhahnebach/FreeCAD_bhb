@@ -336,6 +336,7 @@ void TaskPostBox::updateEnumerationList(App::PropertyEnumeration& prop, QComboBo
     // be aware the QComboxBox might be connected to the Property,
     // thus clearing the box will set back the property enumeration index too.
     // https://forum.freecadweb.org/viewtopic.php?f=10&t=30944
+    Base::Console().Log("init: enum value color: %i: \n", index);
     box->clear();
     box->insertItems(0, list);
     box->setCurrentIndex(index);
