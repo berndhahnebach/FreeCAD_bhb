@@ -776,7 +776,9 @@ def insert(srcfile, docname, skip=[], only=[], root=None, preferences=None):
 
             # non-parametric Arch objects (just Arch components with a shape)
 
-            if ptype in ["IfcSite","IfcBuilding","IfcBuildingStorey"]:
+            # temporary get rid of the thousands of recomputes
+            # if ptype in ["IfcSite","IfcBuilding","IfcBuildingStorey"]:
+            if False:
                 for freecadtype,ifctypes in typesmap.items():
                     if ptype in ifctypes:
                         obj = getattr(Arch,"make"+freecadtype)(baseobj=baseobj,name=name)
