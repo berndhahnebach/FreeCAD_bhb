@@ -538,6 +538,32 @@ def predefined_to_rgb(rgb_color):
 
     return PREDEFINED_RGB[name]
 
+
+'''
+# testfiles
+
+import importIFCorg
+importIFCorg.open(u"/home/hugo/Desktop/ifcfarben/FZAG_O45_ING_TRW.ifc")
+importIFCorg.open(u"/home/hugo/Desktop/ifcfarben/IFC Schependomlaan.ifc")
+# importIFCorg.open(u"/home/hugo/Desktop/FreeCAD_zeug/ifc/210_King_Merged.ifc")
+importIFCorg.open(u"/home/hugo/Desktop/FreeCAD_zeug/ifc/20176001-2x3.ifc")
+importIFCorg.open(u"/home/hugo/Desktop/ifcfarben/FZAG_W22_Tech_G3_AU_2018-12-20.ifc")
+importIFCorg.open(u"/home/hugo/Desktop/ifcfarben/FZAG_W22_Arch_ROH_2018-11-21.ifc")
+importIFCorg.open(u"/home/hugo/Desktop/ifcfarben/FZAG_W23_Arch_ROH_180706.ifc")
+
+import importIFC
+importIFC.open(u"/home/hugo/Desktop/ifcfarben/FZAG_O45_ING_TRW.ifc")
+importIFC.open(u"/home/hugo/Desktop/ifcfarben/FZAG_W22_Tech_G3_AU_2018-12-20.ifc")
+importIFC.open(u"/home/hugo/Desktop/ifcfarben/FZAG_W23_Arch_ROH_170718.ifc")
+
+importIFC.open(u"/home/hugo/Desktop/ifcfarben/FZAG_W22_Arch_ROH_2018-11-21.ifc")
+importIFC.open(u"/home/hugo/Desktop/ifcfarben/IFC Schependomlaan.ifc")
+
+# importIFC.open(u"/home/hugo/Desktop/ifcfarben/FZAG_W23_Arch_ROH_180706.ifc")
+
+'''
+
+
 # ************************************************************************************************
 # property related methods
 def buildRelProperties(ifcfile):
