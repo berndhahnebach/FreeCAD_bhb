@@ -82,6 +82,7 @@ def import_dat(
 def readResult(
     dat_input
 ):
+    import math
     Console.PrintMessage("Read ccx results from dat file: {}\n".format(dat_input))
     dat_file = pyopen(dat_input, "r")
     eigenvalue_output_section_found = False
@@ -95,11 +96,21 @@ def readResult(
         if eigenvalue_output_section_found:
             try:
                 mode = int(line[0:7])
-                mode_frequency = float(line[39:55])
+                # https://forum.freecadweb.org/viewtopic.php?f=18&t=37400
+                # unit might not seconds or Hz because unit in CalculiX depends on what goes in
+                # since we gone write s it will be s or Hz
+                freq_real_cyc = float(line[39:55])  # real part in cycles / time
+                freq_imag_rad = float(line[55:71])  # imaginary part in rad / time
+                freq_imag_cyc = freq_imag_rad / (2 * math.pi)
+                print(freq_real_cyc)
+                print(freq_imag_cyc)
+                frequency = math.sqrt(freq_real_cyc ** freq_real_cyc + freq_real_cyc ** freq_real_cyc)
+
                 m = {}
                 m["eigenmode"] = mode
-                m["frequency"] = mode_frequency
+                m["frequency"] = frequency
                 results.append(m)
+
                 mode_reading = True
             except Exception:
                 if mode_reading:
