@@ -329,6 +329,23 @@ def buildRelColors(ifcfile, prodrepr):
         if k in style_color_rgb:
             colors[style_material_id[k]] = style_color_rgb[k]
 
+    print("\n")
+    colors2 = buildRelProductColors(ifcfile, prodrepr)
+    colorsm = []
+    for e in colors:
+        if not ifcfile[e].is_a("IfcMaterial"):
+            colorsm.append(e)
+    # print(colors)
+    # print(colors2)
+    # print(len(list(prodrepr.keys())))
+    # print(len(colors))
+    # print(len(colorsm))
+    print(len(colors2))
+    print("colors_keys(without IfcMaterial) - colors2_keys")
+    print(list(set(colorsm)-set(colors2.keys())))
+    print("colors_keys2 - colors_keys(without IfcMaterial)")
+    print(list(set(colors2.keys())-set(colorsm)))
+
     return colors
 
 
