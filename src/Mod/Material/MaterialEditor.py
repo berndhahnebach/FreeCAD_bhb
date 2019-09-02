@@ -642,8 +642,8 @@ class MaterialsDelegate(QtGui.QStyledItemDelegate):
         if Type == "Color":
 
             color = editor.property("color")
-            color = tuple([v/255.0 for v in color.getRgb()])
-            item.setText(str(color))
+            color = color.getRgbF()
+            item.setText(str(color[:-1]))
 
         elif Type == "File":
 
@@ -741,8 +741,13 @@ def matProperWidget(parent=None, matproperty=None, Type="String", Value=None,
         if Value:
             value = string2tuple(Value)
             color = QtGui.QColor()
+<<<<<<< HEAD
             color.setRgb(value[0], value[1], value[2], value[3])
             widget.setProperty("color", color)
+=======
+            color.setRgbF(value[0], value[1], value[2])
+            widget.setProperty('color', color)
+>>>>>>> Create and save material colors as 3 floats
 
     else:
 
@@ -767,8 +772,16 @@ def matProperWidget(parent=None, matproperty=None, Type="String", Value=None,
 def string2tuple(string):
     "provisionally"
     value = string[1:-1]
+<<<<<<< HEAD
     value = value.split(",")
+=======
+    value = value.split(',')
+<<<<<<< HEAD
+>>>>>>> Create and save material colors as 3 floats
     value = [int(float(v)*255) for v in value]
+=======
+    value = [float(v) for v in value]
+>>>>>>> Create and save material colors as 3 floats
     value = tuple(value)
     return value
 
