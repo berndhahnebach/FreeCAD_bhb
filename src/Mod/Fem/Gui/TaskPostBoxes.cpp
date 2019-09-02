@@ -332,7 +332,7 @@ void TaskPostBox::updateEnumerationList(App::PropertyEnumeration& prop, QComboBo
         list.push_back(QString::fromStdString(*it));
     }
 
-    //Base::Console().Message("Property enum informations1: Index = %i, Value = %s\n", prop.getValue(), (vec[prop.getValue()]).c_str());
+    //Base::Console().Message("Property enum information 1: Index = %i, Value = %s\n", prop.getValue(), (vec[prop.getValue()]).c_str());
 
     int index = prop.getValue();
     // be aware the QComboxBox might be connected to the Property,
@@ -343,7 +343,7 @@ void TaskPostBox::updateEnumerationList(App::PropertyEnumeration& prop, QComboBo
     box->insertItems(0, list);
     box->setCurrentIndex(index);
 
-    //Base::Console().Message("Property enum informations2: Index = %i, Value = %s\n", prop.getValue(), (vec[prop.getValue()]).c_str());
+    //Base::Console().Message("Property enum information 2: Index = %i, Value = %s\n", prop.getValue(), (vec[prop.getValue()]).c_str());
 }
 
 // ***************************************************************************
@@ -355,7 +355,7 @@ TaskPostDisplay::TaskPostDisplay(Gui::ViewProviderDocumentObject* view, QWidget 
     // some log
     App::PropertyEnumeration& myprop = getTypedView<ViewProviderFemPostObject>()->Field;  // warum nur als Ref moeglich
     std::vector<std::string> vec = myprop.getEnumVector();
-    Base::Console().Message("Property enum informations Field: Index = %i, Value = %s\n", myprop.getValue(), (vec[myprop.getValue()]).c_str());
+    Base::Console().Message("Property enum information Field: Index = %i, Value = %s\n", myprop.getValue(), (vec[myprop.getValue()]).c_str());
 
     //we need a separate container widget to add all controls to
     proxy = new QWidget(this);
@@ -373,7 +373,7 @@ TaskPostDisplay::TaskPostDisplay(Gui::ViewProviderDocumentObject* view, QWidget 
     // some log
     App::PropertyEnumeration& myprop2 = getTypedView<ViewProviderFemPostObject>()->Field;  // warum nur als Ref moeglich
     std::vector<std::string> vec2 = myprop2.getEnumVector();
-    Base::Console().Message("Property enum informations Field: Index = %i, Value = %s\n", myprop2.getValue(), (vec2[myprop2.getValue()]).c_str());
+    Base::Console().Message("Property enum information Field: Index = %i, Value = %s\n", myprop2.getValue(), (vec2[myprop2.getValue()]).c_str());
 
     // get Tranparency from ViewProvider
     int trans = getTypedView<ViewProviderFemPostObject>()->Transparency.getValue();
