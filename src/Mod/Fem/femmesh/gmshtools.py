@@ -456,10 +456,13 @@ class GmshTools():
                     if len(m.References):
                         self.constraint_objects[m.Name] = list(m.References[0][1])
                     else:
-                        FreeCAD.Console.PrintWarning("Constraint object `{}` has empty References".format(m.Label))
+                        FreeCAD.Console.PrintWarning(
+                            "Constraint object `{}` has empty References"
+                            .format(m.Label)
+                        )
             Console.PrintMessage("self.constraint_objects = \n", self.constraint_objects)
         else:
-            Console.PrintMessage(" No anlysis is provided to get FemCconstraint group\n")
+            Console.PrintMessage(" No analysis is provided to get FemCconstraint group\n")
 
     def get_gmsh_version(self):
         self.get_gmsh_command()
@@ -732,7 +735,8 @@ class GmshTools():
 
         if all_group_elements:
             geo.write("// group data \n")
-            # we use the element name of FreeCAD which starts with 1 (example: "Face1"), same as GMSH
+            # we use the element name of FreeCAD which starts with 1 (example: "Face1")
+            # same as GMSH
             for group in all_group_elements:
                 gdata = all_group_elements[group]
                 ele_nr = ""
@@ -757,8 +761,11 @@ class GmshTools():
                     if self.dimension == "2":
                         boundaries += 1
                 elif gdata[0].startswith("Vertex"):
-                    geo.write("// " + group + " group data not written. Vertexes group data not supported.\n")
-                    print("  Groups for Vertexes reference shapes not handeled yet.")
+                    geo.write(
+                        "// {} group data not written. Vertexes group data not supported.\n"
+                        .format(group)
+                    )
+                    print("  Groups for Vertexes reference shapes not handled yet.")
                 if ele_nr:
                     ele_nr = ele_nr.rstrip(", ")
                     # print(ele_nr)
@@ -771,27 +778,45 @@ class GmshTools():
                     )
             geo.write("\n")
 
-        # if physical volume for 3D or physical surface for 2D mesh is NOT defined, define a default interior domain for Fenics mesh
+        # if physical volume for 3D or physical surface for 2D mesh is NOT defined
+        # define a default interior domain for Fenics mesh
         if domains == 0:
             if self.dimension == "3":
                 geo.write('Physical Volume("Interior") = {1};\n')
             if self.dimension == "2":
                 geo.write('Physical Surface("Interior") = {1};\n')
         else:
-            print("Warning: no subdomain group data are written, thus subdomain nesh will not be exported")
+            print(
+                "Warning: no subdomain group data are written, "
+                "thus subdomain nesh will not be exported"
+            )
         if boundaries == 0:
-            print("Warning: no boundary group data are written, thus boundary mesh will not be exported")
+            print(
+                "Warning: no boundary group data are written "
+                "thus boundary mesh will not be exported"
+            )
         geo.write("\n\n")
 
         if self.analysis and self.mesh_obj.OutputFormat == u"I-Deas universal":
-            geo.write("// For each group save not only the elements but the nodes too.;\n")
+            geo.write(
+                "// For each group save not only the "
+                "elements but the nodes too.;\n"
+            )
             geo.write("Mesh.SaveGroupsOfNodes = 1;\n")
-            # Mesh.SaveGroupsOfNodes: Save groups of nodes for each physical line and surface (UNV mesh format only)
-            geo.write("// Needed for Group meshing too, because for one material there is no group defined;\n")
-            # belongs to Mesh.SaveAll but anly needed if there are groups
+            # Mesh.SaveGroupsOfNodes:
+            # Save groups of nodes for each physical line and surface (UNV mesh format only)
+            geo.write(
+                "// Needed for Group meshing too, "
+                "because for one material there is no group defined;\n"
+            )
+            # belongs to Mesh.SaveAll but only needed if there are groups
 
-            geo.write("// Ignore Physical definitions and save all elements, if Mesh.SaveAll = 1;\n")
-            geo.write("Mesh.SaveAll = 1;\n")  # ortherwise only surface mesh is written for mesh read back to FreeCAD
+            geo.write(
+                "// Ignore Physical definitions and save all elements, "
+                "if Mesh.SaveAll = 1;\n"
+            )
+            # ortherwise only surface mesh is written for mesh read back to FreeCAD
+            geo.write("Mesh.SaveAll = 1;\n")
             geo.write("\n\n")
 
     def write_boundary_layer(self, geo):
