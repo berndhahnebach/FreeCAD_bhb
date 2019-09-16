@@ -47,11 +47,11 @@ class GmshError(Exception):
 
 class GmshTools():
 
-    # Forum topic for implementation of aditional export formats
+    # Forum topic for implementation of additional export formats
     # https://forum.freecadweb.org/viewtopic.php?t=23702
     # old PR for FreeCAD
     # https://github.com/FreeCAD/FreeCAD/pull/931
-    # orginal dev repo from qingfengxia:
+    # original dev repo from qingfengxia:
     # https://github.com/qingfengxia/FreeCAD/commits/gmshoutput
     # rebased by bernd
     # https://github.com/berndhahnebach/FreeCAD_bhb/commits/femgmshexport
@@ -224,16 +224,22 @@ class GmshTools():
             self.write_geo(True)
             error = self.run_gmsh_with_geo()  # this function will set self.error = True
             if self.error:
-                print("Gmsh has error during mesh generation for mesh format {}".format(error))
+                FreeCAD.Console.PrintMessage(
+                    "Gmsh has error during mesh generation for mesh format {}"
+                    .format(error)
+                )
             else:
                 output_filename = self.temp_file_mesh
-                print("Gmsh has generated mesh format {} into file: {}".format(output_format, output_filename))
+                FreeCAD.Console.PrintMessage(
+                    "Gmsh has generated mesh format {} into file: {}"
+                    .format(output_format, output_filename)
+                )
                 if output_filestring:
                     import shutil
                     shutil.move(output_filename, output_filestring)
                     output_filename = output_filestring
         except Exception as e:
-            print(e)
+            FreeCAD.Console.PrintMessage(e)
         finally:
             self.mesh_obj.OutputFormat = _output_format
         return output_filename
@@ -836,9 +842,13 @@ class GmshTools():
 
         # mesh parameter
         if scaling:  # from FreeCAD length unit to MKS
-            unit_shema = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Units/").GetInt("UserSchema")
+            unit_shema = FreeCAD.ParamGet(
+                "User parameter:BaseApp/Preferences/Units/"
+            ).GetInt("UserSchema")
             if unit_shema == 0:  # mm as length unit, default for CAD
-                geo.write("// length scale from current FreeCAD length unit to MKS unit (meter)\n")
+                geo.write(
+                    "// length scale from current FreeCAD length unit to MKS unit (meter)\n"
+                )
                 geo.write("Mesh.ScalingFactor={};\n".format(0.001))
                 geo.write("\n")
         geo.write("// min, max Characteristic Length\n")
@@ -942,7 +952,10 @@ class GmshTools():
         geo.write("\n")
 
         # save mesh
-        geo.write("// output format 1=msh, 2=unv, 10=automatic, 27=stl, 32=cgns, 33=med, 39=inp, 40=ply2\n")
+        geo.write(
+            "// output format 1=msh, 2=unv, 10=automatic, "
+            "27=stl, 32=cgns, 33=med, 39=inp, 40=ply2\n"
+        )
         geo.write("Mesh.Format = {};\n".format(
             GmshTools.supported_mesh_output_formats[self.mesh_obj.OutputFormat]
         ))
