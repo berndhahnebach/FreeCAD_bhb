@@ -191,6 +191,9 @@ class GmshTools():
             self.group_nodes_export = False
         self.group_elements = {}
 
+        # group from FemConstraint objects of analysis object
+        self.constraint_objects = {}
+
         # mesh regions
         self.ele_length_map = {}  # { "ElementString" : element length }
         self.ele_node_map = {}  # { "ElementString" : [element nodes] }
@@ -427,7 +430,7 @@ class GmshTools():
         # TODO: solids, faces, edges and vertexes don't seem to work together in one group,
         #       some output message or make them work together
 
-        # mesh group objects
+        # mesh groups and groups of analysis member
         if not self.mesh_obj.MeshGroupList:
             # print("  No mesh group objects.")
             pass
@@ -439,32 +442,24 @@ class GmshTools():
                     if ge not in self.group_elements:
                         self.group_elements[ge] = new_group_elements[ge]
                     else:
-                        Console.PrintError("  A group with this name exists already.\n")
+                        FreeCAD.Console.PrintError("  A group with this name exists already.\n")
+        Console.PrintMessage("  {}\n".format(self.group_elements))
 
-        # group meshing for analysis
-        analysis_group_meshing = FreeCAD.ParamGet(
-            "User parameter:BaseApp/Preferences/Mod/Fem/General"
-        ).GetBool("AnalysisGroupMeshing", False)
-        if self.analysis and analysis_group_meshing:
-            Console.PrintWarning(
-                "  Group meshing for analysis is set to true in FEM General Preferences. "
-                "Are you really sure about this? You could run into trouble!\n"
-            )
-            self.group_nodes_export = True
-            new_group_elements = meshtools.get_analysis_group_elements(
-                self.analysis,
-                self.part_obj
-            )
-            for ge in new_group_elements:
-                if ge not in self.group_elements:
-                    self.group_elements[ge] = new_group_elements[ge]
-                else:
-                    Console.PrintError("  A group with this name exists already.\n")
+        self.get_constraint_data()
+        # TODO: get material_obj with References
+
+    def get_constraint_data(self):
+        if self.analysis:
+            Console.PrintMessage(" collect constraint group for analysis object\n")
+            for m in self.analysis.Member:
+                if m.isDerivedFrom("Fem::Constraint"):
+                    if len(m.References):
+                        self.constraint_objects[m.Name] = list(m.References[0][1])
+                    else:
+                        FreeCAD.Console.PrintWarning("Constraint object `{}` has empty References".format(m.Label))
+            Console.PrintMessage("self.constraint_objects = \n", self.constraint_objects)
         else:
-            Console.PrintMessage("  No Group meshing for analysis.\n")
-
-        if self.group_elements:
-            Console.PrintMessage("  {}\n".format(self.group_elements))
+            Console.PrintMessage(" No anlysis is provided to get FemCconstraint group\n")
 
     def get_gmsh_version(self):
         self.get_gmsh_command()
@@ -726,33 +721,44 @@ class GmshTools():
             Console.PrintMessage("  {}\n".format(self.bl_setting_list))
 
     def write_groups(self, geo):
-        if self.group_elements:
-            # print("  We are going to have to find elements to make mesh groups for.")
-            geo.write("// group data\n")
-            # we use the element name of FreeCAD which starts
-            # with 1 (example: "Face1"), same as Gmsh
-            # for unit test we need them to have a fixed order
-            for group in sorted(self.group_elements.keys()):
-                gdata = self.group_elements[group]
-                # print(gdata)
-                # geo.write("// " + group + "\n")
+        boundaries = 0
+        domains = 0
+
+        import copy
+        all_group_elements = copy.copy(self.group_elements)
+        for k in self.constraint_objects:
+            all_group_elements[k] = self.constraint_objects[k]
+        print(all_group_elements)
+
+        if all_group_elements:
+            geo.write("// group data \n")
+            # we use the element name of FreeCAD which starts with 1 (example: "Face1"), same as GMSH
+            for group in all_group_elements:
+                gdata = all_group_elements[group]
                 ele_nr = ""
                 if gdata[0].startswith("Solid"):
                     physical_type = "Volume"
                     for ele in gdata:
                         ele_nr += (ele.lstrip("Solid") + ", ")
+                    if self.dimension == "3":
+                        domains += 1
                 elif gdata[0].startswith("Face"):
                     physical_type = "Surface"
                     for ele in gdata:
                         ele_nr += (ele.lstrip("Face") + ", ")
+                    if self.dimension == "2":
+                        domains += 1
+                    if self.dimension == "3":
+                        boundaries += 1
                 elif gdata[0].startswith("Edge"):
                     physical_type = "Line"
                     for ele in gdata:
                         ele_nr += (ele.lstrip("Edge") + ", ")
+                    if self.dimension == "2":
+                        boundaries += 1
                 elif gdata[0].startswith("Vertex"):
-                    physical_type = "Point"
-                    for ele in gdata:
-                        ele_nr += (ele.lstrip("Vertex") + ", ")
+                    geo.write("// " + group + " group data not written. Vertexes group data not supported.\n")
+                    print("  Groups for Vertexes reference shapes not handeled yet.")
                 if ele_nr:
                     ele_nr = ele_nr.rstrip(", ")
                     # print(ele_nr)
@@ -764,6 +770,29 @@ class GmshTools():
                         .format(physical_type, group, curly_br_s, ele_nr, curly_br_e)
                     )
             geo.write("\n")
+
+        # if physical volume for 3D or physical surface for 2D mesh is NOT defined, define a default interior domain for Fenics mesh
+        if domains == 0:
+            if self.dimension == "3":
+                geo.write('Physical Volume("Interior") = {1};\n')
+            if self.dimension == "2":
+                geo.write('Physical Surface("Interior") = {1};\n')
+        else:
+            print("Warning: no subdomain group data are written, thus subdomain nesh will not be exported")
+        if boundaries == 0:
+            print("Warning: no boundary group data are written, thus boundary mesh will not be exported")
+        geo.write("\n\n")
+
+        if self.analysis and self.mesh_obj.OutputFormat == u"I-Deas universal":
+            geo.write("// For each group save not only the elements but the nodes too.;\n")
+            geo.write("Mesh.SaveGroupsOfNodes = 1;\n")
+            # Mesh.SaveGroupsOfNodes: Save groups of nodes for each physical line and surface (UNV mesh format only)
+            geo.write("// Needed for Group meshing too, because for one material there is no group defined;\n")
+            # belongs to Mesh.SaveAll but anly needed if there are groups
+
+            geo.write("// Ignore Physical definitions and save all elements, if Mesh.SaveAll = 1;\n")
+            geo.write("Mesh.SaveAll = 1;\n")  # ortherwise only surface mesh is written for mesh read back to FreeCAD
+            geo.write("\n\n")
 
     def write_boundary_layer(self, geo):
         # currently single body is supported
