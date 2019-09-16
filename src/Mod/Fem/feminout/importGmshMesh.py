@@ -1,6 +1,8 @@
 # ***************************************************************************
+# *   Copyright (c) 2017 Qingfeng Xia <qingfeng.xia@gmail.coom>             *
+# *   Copyright (c) 2020 Bernd Hahnebach <bernd@bimstatik.org>              *
 # *                                                                         *
-# *   Copyright (c) 2017 - Qingfeng Xia <ox.ac.uk>             *
+# *   This file is part of the FreeCAD CAx development system.              *
 # *                                                                         *
 # *   This program is free software; you can redistribute it and/or modify  *
 # *   it under the terms of the GNU Lesser General Public License (LGPL)    *
@@ -19,7 +21,44 @@
 # *   USA                                                                   *
 # *                                                                         *
 # ***************************************************************************
-from __future__ import print_function
+
+""" Methods to export a FemMesh to the file formats supported by Gmsh
+see gmsh document object for the known gmsh output file formats
+
+The export format has to be set in gmsh mesh object. There should be a switch
+here which sets the export property in gmsh object or we make this an optional
+parameter on instantiate the class of GmshTools or whatever.
+If the user exports to msh Init.py will call the export method here, 
+but if in gmsh mesh object the export property is set to ply2 the
+mesh is exported to ply2. This should not happen.
+
+Or the other way around, if export format has changed per accident
+the solver execution does not work anymore because input file writing
+would be broken. This should not happen.
+
+Furthermore, stl, inp, unv can be chosen as well, thus they might also
+be in init, but if chosen to use gmsh to export them we need to make
+sure the file was exported by the use of gmsh.
+
+Furthermore if a mesh is just exported to stl or inp by python which
+exporter is taken? This should be clear without having to look
+into the source.
+
+There are some things left to tackle.
+
+forum topic: 
+https://forum.freecadweb.org/viewtopic.php?t=23702
+
+old PR for FreeCAD:
+https://github.com/FreeCAD/FreeCAD/pull/931
+
+original dev repo from qingfengxia:
+https://github.com/qingfengxia/FreeCAD/commits/gmshoutput
+
+rebased by bernd
+https://github.com/berndhahnebach/FreeCAD_bhb/commits/femgmshexport
+
+"""
 
 __title__ = "FreeCAD Gmsh supported format mesh export"
 __author__ = "Qingfeng Xia, Bernd Hahnebach"
@@ -27,22 +66,33 @@ __url__ = "http://www.freecadweb.org"
 
 ## @package importGmshMesh
 #  \ingroup FEM
-#  \brief FreeCAD gmsh supported format mesh export from FemMeshGmsh object
+#  \brief gmsh supported format mesh export from FemMeshGmsh object
 
 import os
 import os.path
 import subprocess
+import sys
 
 import FreeCAD
-import femmesh.gmshtools as gmshtools
+
 import FemGui
+from femmesh import gmshtools
+from femtools import femutils
 
 
-########## generic FreeCAD import and export methods ##########
-# only export are supported, and boundary mesh might also be exported
+if sys.version_info.major >= 3:
+    unicode = str
+
+
+# ************************************************************************************************
+# ********* generic FreeCAD import and export methods ********************************************
+# only export is supported, thus neither open nor insert method is needed
+
+# boundary mesh might also be exported
 
 def export(objectslist, fileString):
-    "called when freecad exports a mesh file supprted by gmsh generation"
+    """called when freecad exports a mesh file supprted by gmsh generation
+    """
     if len(objectslist) != 1:
         FreeCAD.Console.PrintError("This exporter can only export one object.\n")
         return
@@ -50,7 +100,7 @@ def export(objectslist, fileString):
     if not obj.isDerivedFrom("Fem::FemMeshObject"):
         FreeCAD.Console.PrintError("No FEM mesh object selected.\n")
         return
-    if not obj.Type == 'FemMeshGmsh':
+    if not femutils.is_of_type(obj, "Fem::FemMeshGmsh"):
         FreeCAD.Console.PrintError("Object selected is not a FemMeshGmsh type\n")
         return
 
@@ -69,48 +119,13 @@ def export(objectslist, fileString):
                 if not ret:
                     FreeCAD.Console.PrintError("Mesh is written to `{}` by Gmsh\n".format(ret))
                 return
-        FreeCAD.Console.PrintError("Export mesh format with suffix `{}` is not supported by Gmsh\n".format(fileExtension.lower()))
+        FreeCAD.Console.PrintError(
+            "Export mesh format with suffix `{}` is not supported by Gmsh\n"
+            .format(fileExtension.lower())
+        )
 
 
-def _run_command(comandlist):
-    print("Run command: " + ' '.join(comandlist))
-    error = None
-    try:
-        # FIXME: shell=True, unsafe code, needed by dolfin-convert
-        p = subprocess.Popen(comandlist, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, error = p.communicate()
-        print(output)  # stdout is still cut at some point but the warnings are in stderr and thus printed :-)
-    except Exception as e:
-        error = 'Error executing: {}\n'.format(' '.join(comandlist))
-        print(e)
-        FreeCAD.Console.PrintError(error)
-    return error
+# ************************************************************************************************
+# ********* module specific methods **************************************************************
 
-
-def export_fenics_mesh(obj, meshfileString):
-    if not meshfileString[-4:] == ".xml":
-        error = "Error: only xml mesh is supported by gmsh conversion"
-        FreeCAD.Console.PrintError(error)
-        return error
-    meshfileStem = (meshfileString[:-4])
-    if isinstance(meshfileStem, (unicode,)):
-        meshfileStem = meshfileStem.encode('ascii')
-
-    gmsh = gmshtools.GmshTools(obj, FemGui.getActiveAnalysis())
-    meshfile = gmsh.export_mesh(u"Gmsh MSH", meshfileStem + ".msh")
-    if meshfile:
-        msg = "Info: Mesh has been written to `{}` by Gmsh\n".format(meshfile)
-        FreeCAD.Console.PrintMessage(msg)
-        # once Fenics is installed, dolfin-convert should be in path
-        # comandlist = [u'dolfin-convert', u'-i gmsh', unicode(meshfileStem) + u".msh", unicode(meshfileStem) + u".xml"]
-        comandlist = ['dolfin-convert {}.msh {}.xml'.format(meshfileStem, meshfileStem)]  # work only with shell = True
-        # mixed str and unicode in comandlist cause error to run in subprocess
-        error = _run_command(comandlist)
-        if not os.path.exists(meshfileStem + "_physical_region.xml"):
-            FreeCAD.Console.PrintWarning("Mesh  boundary file `{}` not generated\n".format(meshfileStem + "_physical_region.xml"))
-        if error:
-            return error
-    else:
-        error = "Failed to write mesh file `{}` by Gmsh\n".format(meshfileString)
-        FreeCAD.Console.PrintError(error)
-        return error
+# none

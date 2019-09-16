@@ -321,8 +321,8 @@ class MeshGmsh(base_fempythonobject.BaseFemPythonObject):
             obj.addProperty(
                 "App::PropertyEnumeration",
                 "OutputFormat",
-                "FEM GMSH Mesh Params",
+                "FEM Gmsh Mesh Params",
                 "mesh output file format"
             )
-            obj.OutputFormat = [k for k in _FemMeshGmsh.known_mesh_output_format.keys()]
+            obj.OutputFormat = [k for k in MeshGmsh.known_mesh_output_format.keys()]
             obj.OutputFormat = 'I-Deas universal'  # unv is supported by Calculix

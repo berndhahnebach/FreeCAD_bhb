@@ -66,7 +66,7 @@ FreeCAD.addExportType("FEM mesh TetGen (*.poly)", "feminout.convert2TetGen")
 FreeCAD.addImportType("FEM mesh formats (*.bdf *.dat *.inp *.med *.unv *.vtk *.vtu *.z88)", "Fem")
 FreeCAD.addExportType("FEM mesh formats (*.dat *.inp *.med *.stl *.unv *.vtk *.vtu *.z88)", "Fem")
 
-FreeCAD.addExportType("FEM mesh Gmsh formats (*.ply2 *.cgns *.msh)", "feminout.importGmshMesh")
+FreeCAD.addExportType("FEM mesh Gmsh formats (*.cgns *.msh *.ply2)", "feminout.importGmshMesh")
 
 FreeCAD.addImportType("FEM result CalculiX (*.frd)", "feminout.importCcxFrdResults")
 
