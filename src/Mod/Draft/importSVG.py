@@ -952,7 +952,11 @@ class svgHandler(xml.sax.ContentHandler):
                             currentvec = lastvec.add(Vector(x, 0, 0))
                         else:
                             currentvec = Vector(x, lastvec.y, 0)
-                        seg = Part.LineSegment(lastvec, currentvec).toShape()
+                        try:
+                            seg = Part.LineSegment(lastvec, currentvec).toShape()
+                        except:
+                            print("error please print real error")
+                            continue
                         lastvec = currentvec
                         lastpole = None
                         path.append(seg)
@@ -1321,13 +1325,16 @@ class svgHandler(xml.sax.ContentHandler):
                 pathname = 'Line'
             p1 = Vector(data['x1'], -data['y1'], 0)
             p2 = Vector(data['x2'], -data['y2'], 0)
-            sh = Part.LineSegment(p1, p2).toShape()
-            sh = self.applyTrans(sh)
-            obj = self.doc.addObject("Part::Feature", pathname)
-            obj.Shape = sh
-            self.format(obj)
-            if self.currentsymbol:
-                self.symbols[self.currentsymbol].append(obj)
+            try:
+                sh = Part.LineSegment(p1, p2).toShape()
+                sh = self.applyTrans(sh)
+                obj = self.doc.addObject("Part::Feature", pathname)
+                obj.Shape = sh
+                self.format(obj)
+                if self.currentsymbol:
+                    self.symbols[self.currentsymbol].append(obj)
+            except:
+                print("error please print real error")
 
         # Process polylines and polygons
         if name == "polyline" or name == "polygon":
@@ -1472,9 +1479,18 @@ class svgHandler(xml.sax.ContentHandler):
         """Read characters from the given string."""
         if self.text:
             _msg("reading characters {}".format(content))
+            """
             obj = self.doc.addObject("App::Annotation", 'Text')
             # use ignore to not break import if char is not found in latin1
             obj.LabelText = content.encode('latin1', 'ignore')
+            """
+            print(content)
+            print(self.text)
+            print(self.fill)
+            print(self.__dir__())
+            text_string = content.encode('utf8')
+            print(text_string)
+            obj = Draft.makeText(text_string, point=FreeCAD.Vector(0, 0, 0))
             if self.currentsymbol:
                 self.symbols[self.currentsymbol].append(obj)
             vec = Vector(self.x, -self.y, 0)
@@ -1485,7 +1501,8 @@ class svgHandler(xml.sax.ContentHandler):
                 # vec = self.translateVec(vec, transform)
                 vec = transform.multiply(vec)
             # print("applying vector: ", vec)
-            obj.Position = vec
+            #obj.Position = vec
+            obj.Placement.Base = vec
             if FreeCAD.GuiUp:
                 obj.ViewObject.FontSize = int(self.text)
                 if self.fill:
