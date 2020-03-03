@@ -30,6 +30,30 @@ __url__ = "https://www.freecadweb.org"
 #  \ingroup FEM
 #  \brief base object for FEM Python Features
 
+# some information:
+# in FemConstraint add a link to Yoriks explanation about the type
+# https://forum.freecadweb.org/viewtopic.php?t=38820#p329408
+# https://forum.freecadweb.org/viewtopic.php?t=26126
+# https://forum.freecadweb.org/viewtopic.php?f=10&t=42948
+# Proxy.Type will not be written into saved document but module and class name will
+# all Python obj. use Fem::Name not Fem::FemName
+# C++ obj use a mix some are with some without second Fem
+
+# classes inherited from FemConstraint usually have the class name class Proxy
+# for compativility reason some classes newly changed to inherit from
+# FemConstraint are kept because of compativility reason
+# if class name of a object changes it will not be proper loaded anymore
+# because class names and module names are written into document
+# this is needed for object rebuild on document reload
+
+# all could be named Proxy and for reading the old one an inherited class which
+# inits the Proxi one should be ok
+
+# no init in inherited class ... only the methods from base class will be inherited
+# init in inherited class which calls init of base clase, this will be run
+# and may be some attributes are added
+# any other class from base class could be called too, see setEdit in VP classes
+
 
 class BaseFemPythonObject(object):
 
