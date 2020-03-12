@@ -2133,6 +2133,8 @@ def getRepresentation(ifcfile,context,obj,forcebrep=False,subtraction=False,tess
                             dataset = fcshape.Solids
                         elif fcshape.Shells:
                             dataset = fcshape.Shells
+                        else:
+                            dataset = fcshape.Faces
                             #if preferences['DEBUG']: print("Warning! object contains no solids")
                         else:
                             if preferences['DEBUG']: print("Warning! object "+obj.Label+" contains no solids or shells")
@@ -2219,6 +2221,7 @@ def getRepresentation(ifcfile,context,obj,forcebrep=False,subtraction=False,tess
 
                         shapedefs[shapedef] = shapes
 
+    print(shapes)
     if shapes:
 
         colorshapes = shapes # to keep track of individual shapes for coloring below
