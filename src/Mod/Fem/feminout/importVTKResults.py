@@ -132,10 +132,11 @@ def importVtkVtkResult(
     filename,
     resultname
 ):
-    vtk_result_obj = FreeCAD.ActiveDocument.addObject("Fem::FemPostPipeline", resultname)
+    doc = FreeCAD.activeDocument()
+    vtk_result_obj = doc.addObject("Fem::FemPostPipeline", resultname)
     vtk_result_obj.read(filename)
     vtk_result_obj.touch()
-    FreeCAD.ActiveDocument.recompute()
+    doc.recompute()
     return vtk_result_obj
 
 
@@ -143,10 +144,11 @@ def importVtkFemMesh(
     filename,
     meshname
 ):
-    meshobj = FreeCAD.ActiveDocument.addObject("Fem::FemMeshObject", meshname)
+    doc = FreeCAD.activeDocument()
+    meshobj = doc.addObject("Fem::FemMeshObject", meshname)
     meshobj.FemMesh = Fem.read(filename)
     meshobj.touch()
-    FreeCAD.ActiveDocument.recompute()
+    doc.recompute()
     return meshobj
 
 
@@ -165,8 +167,9 @@ def importVtkFCResult(
     if analysis:
         analysis_object = analysis
 
+    document = FreeCAD.activeDocument()
     results_name = result_name_prefix + "results"
-    result_obj = ObjectsFem.makeResultMechanical(FreeCAD.ActiveDocument, results_name)
+    result_obj = ObjectsFem.makeResultMechanical(document, results_name)
     # readResult always creates a new femmesh named ResultMesh
     Fem.readResult(filename, result_obj.Name)
 
@@ -187,5 +190,5 @@ def importVtkFCResult(
     if analysis:
         analysis_object.addObject(result_obj)
     result_obj.touch()
-    FreeCAD.ActiveDocument.recompute()
+    document.recompute()
     return result_obj

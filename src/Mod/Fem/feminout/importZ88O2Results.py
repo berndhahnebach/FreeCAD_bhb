@@ -92,13 +92,16 @@ def import_z88_disp(
         if analysis:
             analysis_object = analysis
 
+        # get document
+        document = FreeCAD.activeDocument()
+
         # read result mesh
         if filename.endswith("z88o2.txt"):
             mesh_file = filename.replace("o2", "i1")
             mesh_data = importZ88Mesh.read_z88_mesh(mesh_file)
             femmesh = importToolsFem.make_femmesh(mesh_data)
             result_mesh_object = ObjectsFem.makeMeshResult(
-                FreeCAD.ActiveDocument,
+                document,
                 "Result_mesh"
             )
             result_mesh_object.FemMesh = femmesh
@@ -109,7 +112,7 @@ def import_z88_disp(
         for result_set in disp_read["Results"]:
             results_name = result_name_prefix + "results"
 
-            res_obj = ObjectsFem.makeResultMechanical(FreeCAD.ActiveDocument, results_name)
+            res_obj = ObjectsFem.makeResultMechanical(document, results_name)
             res_obj.Mesh = result_mesh_object
             res_obj = importToolsFem.fill_femresult_mechanical(res_obj, result_set)
             res_obj = resulttools.add_disp_apps(res_obj)  # fill DisplacementLengths
@@ -122,7 +125,7 @@ def import_z88_disp(
             if analysis:
                 import FemGui
                 FemGui.setActiveAnalysis(analysis_object)
-            FreeCAD.ActiveDocument.recompute()
+            document.recompute()
 
     else:
         Console.PrintError(
