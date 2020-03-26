@@ -508,7 +508,9 @@ class GeometryElementsSelection(QtGui.QWidget):
                                     # could be more than two solids, think of polar pattern
                                     FreeCAD.Console.PrintMessage(
                                         "    Edge belongs to at least two solids: "
-                                        " Solid{}, Solid{}\n"
+                                        "Solid{}, Solid{}\n"
+                                        "        Try to use faces to select the solid. "
+                                        "They work for inner solids too.\n"
                                         .format(solid_to_add, str(i + 1))
                                     )
                                     solid_to_add = None
@@ -526,6 +528,27 @@ class GeometryElementsSelection(QtGui.QWidget):
                                         "    Face belongs to two solids: Solid{}, Solid{}\n"
                                         .format(solid_to_add, str(i + 1))
                                     )
+                                    # add the inner solid if only one of the two is a inner solid
+                                    FreeCAD.Console.PrintMessage(
+                                        "        Check if Solid{} is a inner solid ...\n"
+                                        .format(solid_to_add)
+                                    )
+                                    # implement
+                                    FreeCAD.Console.PrintMessage(
+                                        "        Check if Solid{} is a inner solid ...\n"
+                                        .format(str(i + 1))
+                                    )
+                                    # implement
+                                    #
+                                    # if Edge belongs to more than one solid
+                                    # we can not select the solid at all.
+                                    # try the selection code of Markus in this module
+                                    # https://forum.freecadweb.org/viewtopic.php?f=18&t=34542&p=363691#p363691
+                                    #
+                                    # we need a small list widget to select all available solids
+                                    # it is just this !
+                                    # see code Markus this module or sel macro realthunder
+                                    #
                                     solid_to_add = None
                                 found_eltface_in_other_solid = True
                 if solid_to_add:
