@@ -113,10 +113,12 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
         << "FEM_ElementGeometry2D"
         << "FEM_ElementFluid1D";
 
+    /*
     Gui::ToolBarItem* electrostat = new Gui::ToolBarItem(root);
     electrostat->setCommand("Electrostatic Constraints");
     *electrostat
         << "FEM_ConstraintElectrostaticPotential";
+    */
 
     Gui::ToolBarItem* fluid = new Gui::ToolBarItem(root);
     fluid->setCommand("Fluid Constraints");
@@ -303,7 +305,7 @@ Gui::MenuItem* Workbench::setupMenuBar() const
         << material
         << elegeom
         << "Separator"
-        << elec
+        //<< elec
         << fluid
         << geom
         << mech
