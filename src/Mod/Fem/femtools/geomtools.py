@@ -172,6 +172,42 @@ def is_same_geometry(
 
 
 # ************************************************************************************************
+def is_inner_solid(
+    base_shape,
+    solid_element
+):
+    # base_shape should be a CompSolid or a Compound with at least two solids
+    # solid_element is "Solid4" of the base_shape extract the shape with ge_element
+
+    return False
+
+
+"""
+import femtools.geomtools
+import importlib
+importlib.reload(femtools.geomtools)
+obj = App.getDocument("booleanFragments2").getObject("BooleanFragments")
+femtools.geomtools.is_inner_solid(obj, "Solid1")
+femtools.geomtools.is_inner_solid(obj, "Solid2")
+
+"""
+# for f in
+# ueber alle faces von dieses solid
+#   prefe ob isSame in anderen solids (aber nicht mit sich selber)
+#   falls einer nicht kein inner solid
+#
+# we do it smart an thus it would be cool anyway
+# in geomtools create a
+# is_inner_solid(base_shape, solid_element)
+# HACK or workaround
+# check for an inner solid
+# check if al edges of solid solid_to_add-1 and solid i
+# belong to other solids as well
+# if inner solid add the inner solid
+# if both are inner solids Error message
+
+
+# ************************************************************************************************
 def get_element(
     part,
     element
