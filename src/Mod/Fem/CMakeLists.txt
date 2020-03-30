@@ -71,6 +71,7 @@ SET(FemExamples_SRCS
     femexamples/material_multiple_bendingbeam_fivefaces.py
     femexamples/material_multiple_tensionrod_twoboxes.py
     femexamples/material_nl_platewithhole.py
+    femexamples/oofem_planestress2d.py
     femexamples/rc_wall_2d.py
     femexamples/square_pipe_end_twisted_edgeforces.py
     femexamples/square_pipe_end_twisted_nodeforces.py
