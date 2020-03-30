@@ -91,7 +91,8 @@ def write_oofem_mesh_to_file(
     f,
     femmesh,
     femelement_table,
-    mesh_ele_type=None
+    mesh_ele_type=None,
+    write_comments=True
 ):
     """ *Node coords # (ra)
          [lcs # (ra) ]
@@ -148,8 +149,9 @@ def write_oofem_mesh_to_file(
         return None
 
     # nodes
-    f.write("# Node Records\n")
-    f.write("#\n")
+    if write_comments is True:
+        f.write("# Node Records\n")
+        f.write("#\n")
     node_dof = 3
     femnodes_mesh = femmesh.Nodes
     nodes_count = len(femmesh.Nodes)
@@ -168,9 +170,10 @@ def write_oofem_mesh_to_file(
         )
 
     # elements
-    f.write("#\n")
-    f.write("# Element Records\n")
-    f.write("#\n")
+    if write_comments is True:
+        f.write("#\n")
+        f.write("# Element Records\n")
+        f.write("#\n")
     ele_count = 0
     for element in femelement_table:
         # elements are renumbered starting with 1 !!!

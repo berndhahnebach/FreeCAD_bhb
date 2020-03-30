@@ -56,12 +56,17 @@ class Prepare(run.Prepare):
     def run(self):
         global _inputFileName
         self.pushStatus("Preparing input files...\n")
+        if self.testmode is True:
+            write_comments = True
+        else:
+            write_comments = settings.get_write_comments("oofem")
         w = writer.FemInputWriterOOFEM(
             self.analysis,
             self.solver,
             membertools.get_mesh_to_solve(self.analysis)[0],
             membertools.AnalysisMember(self.analysis),
-            self.directory
+            self.directory,
+            write_comments  # this parameter only exists in oofems writer class
         )
         path = w.write_oofem_input_file()
         # report to user if task succeeded
