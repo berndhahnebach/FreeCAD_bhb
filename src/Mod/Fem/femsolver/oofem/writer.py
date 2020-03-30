@@ -59,6 +59,23 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
         # comments
         self.write_comments = write_comments
 
+        # volume cross section container
+        self.volumesection_objects = []
+        if len(self.shellthickness_objects) == 0:
+            # no shells and one volume cross section
+            self.volumesection_objects = [{}]
+            self.volumesection_objects[0]["tf_number"] = 1
+        # TODO should be in tasks module
+        elif len(self.shellthickness_objects) > 1:
+            sh_name = self.shellthickness_objects[0]["Objects"].Name
+            message = (
+                "Multiple Shellthicknesses for OOFEM not yet supported, "
+                "the first thickness object is taken for all elements: {0}\n"
+                .format(sh_name)
+            )
+            FreeCAD.Console.PrintError(message)
+            self.shellthickness_objects = [self.shellthickness_objects[0]]
+
         # working dir and input file
         from os.path import join
         self.main_file_name = self.mesh_object.Name + ".in"
@@ -285,7 +302,80 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# {}\n".format(67 * "*"))
             f.write("# Components Size Record\n")
             f.write("#\n")
-        f.write("ndofman 8 nelem 5 ncrosssect 1 nmat 1 nbc 3 nic 0 nltf 1 nset 3\n")
+
+        # count mesh nodes and elements
+        # HAAACK, we gone write the mesh into a tmp file to geth the count of written elements
+        from tempfile import mkstemp
+        filepath, filename = mkstemp()
+        tmpfile = open(filepath, "w")
+        from feminout.importOofemMesh import write_oofem_mesh_to_file as write_mesh
+        nd_count, self.ele_count = write_mesh(tmpfile, self.femmesh, self.femelement_table, None)
+        tmpfile.close()
+        # print(nd_count, self.ele_count)
+
+        # count cross sections
+        # only one cross section is supported
+        cs_count = 0
+        allcss = self.volumesection_objects + self.shellthickness_objects
+        for femobj in allcss:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+            cs_count += 1
+            femobj["cs_number"] = cs_count
+        self.cs_count = cs_count  # we need for the set numbers, the bc sets start after cs sets
+
+        # count materials
+        # only one material is supported
+        # check should be in tasks module
+        if len(self.material_objects) != 1:
+            mat_name = self.material_objects[0]["Objects"].Name
+            message = (
+                "Multiple Materials for OOFEM not yet supported, "
+                "the first material is taken for all elements: {0}\n"
+                .format(mat_name)
+            )
+            FreeCAD.Console.PrintError(message)
+            self.material_objects = [self.material_objects[0]]
+        # the only material we have, will have no 1
+        self.material_objects[0]["mat_number"] = 1
+        mat_count = len(self.material_objects)
+
+        # count boundary conditions including loads
+        # TODO get count
+        bc_count = 3
+
+        # count initial conditions
+        # no initial conditions are supported, thus = 0
+        ic_count = 0
+
+        # count time functions and their associated records
+        # no special time functions are supported, thus = 1
+        tltf_count = 1
+
+        # count node- and elementsets
+        # TODO get count ...
+        set_count = 3
+
+        # write values
+        f.write(
+            "ndofman {0}  "
+            "nelem {1}  "
+            "ncrosssect {2}  "
+            "nmat {3}  "
+            "nbc {4}  "
+            "nic {5}  "
+            "nltf {6}  "
+            "nset {7}\n"
+            .format(
+                nd_count,
+                self.ele_count,
+                self.cs_count,
+                mat_count,
+                bc_count,
+                ic_count,
+                tltf_count,
+                set_count
+            )
+        )
 
     def write_dof_manager_record(self, f):
         """ *DofManagerType
@@ -336,17 +426,19 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# {}\n".format(67 * "*"))
             f.write("# Cross Section Record\n")
             f.write("#\n")
-        cs_number = 1
-        self.material_objects[0]["mat_number"] = 1
         mat_number = self.material_objects[0]["mat_number"]
-        self.cs_set_number = 1  # set 1 will be the standard set for cross section record
+        # we only have one cs set, late we gone write this inside the femobj
+        # (like we did with cs_number)
+        self.cs_set_number = 1
         if self.domain == "2dPlaneStress":
             thickness = self.shellthickness_objects[0]["Object"].Thickness.getValueAs("mm")
+            cs_number = self.shellthickness_objects[0]["cs_number"]
             f.write(
                 "SimpleCS {0}  thick {1}  material {2}  set {3}\n"
                 .format(cs_number, thickness, mat_number, self.cs_set_number)
             )
         elif self.domain == "3d":
+            cs_number = self.volumesection_objects[0]["cs_number"]
             f.write(
                 "SimpleCS {0}  material {1}  set {2}\n"
                 .format(cs_number, mat_number, self.cs_set_number)
