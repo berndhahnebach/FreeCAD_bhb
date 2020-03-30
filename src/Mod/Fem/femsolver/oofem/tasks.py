@@ -47,7 +47,7 @@ class Check(run.Check):
 
     def run(self):
         self.pushStatus("Checking analysis...\n")
-        # self.checkMesh()
+        self.checkMesh()
         # self.checkMaterial()
 
 
@@ -59,7 +59,7 @@ class Prepare(run.Prepare):
         w = writer.FemInputWriterOOFEM(
             self.analysis,
             self.solver,
-            None, # membertools.get_mesh_to_solve(self.analysis)[0],
+            membertools.get_mesh_to_solve(self.analysis)[0],
             membertools.AnalysisMember(self.analysis),
             self.directory
         )

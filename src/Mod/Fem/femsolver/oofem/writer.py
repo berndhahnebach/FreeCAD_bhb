@@ -33,6 +33,7 @@ import time
 import FreeCAD
 
 from .. import writerbase
+from femmesh import meshtools
 
 
 class FemInputWriterOOFEM(writerbase.FemInputWriter):
@@ -73,6 +74,16 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
     def write_oofem_input_file(self):
 
         timestart = time.clock()
+
+        """
+        # once we gone need the nodes, we may recode the mesh writer
+        # because we would get the nodes twice
+        if not self.femnodes_mesh:
+            self.femnodes_mesh = self.femmesh.Nodes
+        """
+        if not self.femelement_table:
+            self.femelement_table = meshtools.get_femelement_table(self.femmesh)
+            self.element_count = len(self.femelement_table)
 
         inpfile = open(self.file_name, "w")
 
@@ -284,7 +295,8 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
         f.write("# {}\n".format(67 * "*"))
         f.write("# Node and Element Records\n")
         f.write("#\n")
-        f.write(example_mesh)
+        from feminout.importOofemMesh import write_oofem_mesh_to_file as write_mesh
+        write_mesh(f, self.femmesh, self.femelement_table, None)
 
     def write_cross_section_record(self, f):
         """ *CrossSectType (num#) (in)
@@ -421,21 +433,6 @@ BoundaryCondition 1 loadTimeFunction 1 dofs 2 1 2 values 1 0.0 set 2
 BoundaryCondition 2 loadTimeFunction 1 dofs 1 2 values 1 0.0 set 3
 NodalLoad 3 loadTimeFunction 1 dofs 2 1 2 components 2 2.5 0.0 set 3
 ConstantFunction 1 f(t) 1.0
-"""
-
-example_mesh = """node 1 coords 3  0.0   0.0   0.0
-node 2 coords 3  0.0   4.0   0.0
-node 3 coords 3  2.0   2.0   0.0
-node 4 coords 3  3.0   1.0   0.0
-node 5 coords 3  8.0   0.8   0.0
-node 6 coords 3  7.0   3.0   0.0
-node 7 coords 3  9.0   0.0   0.0
-node 8 coords 3  9.0   4.0   0.0
-PlaneStress2d 1 nodes 4 1 4 3 2  NIP 1
-PlaneStress2d 2 nodes 4 1 7 5 4  NIP 1
-PlaneStress2d 3 nodes 4 4 5 6 3  NIP 1
-PlaneStress2d 4 nodes 4 3 6 8 2  NIP 1
-PlaneStress2d 5 nodes 4 5 7 8 6  NIP 1
 """
 
 ##  @}
