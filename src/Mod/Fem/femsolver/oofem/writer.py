@@ -147,7 +147,7 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# {}\n".format(67 * "*"))
             f.write("# Description Record\n")
             f.write("#\n")
-        f.write("Patch test of PlaneStress2d elements -> pure compression\n")
+        f.write(self.document.Name + "\n")
 
     def write_analysis_record(self, f):
         """ *AnalysisType
