@@ -233,7 +233,11 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# {}\n".format(67 * "*"))
             f.write("# Domain Record\n")
             f.write("#\n")
-        f.write("domain 2dPlaneStress\n")
+        if meshtools.is_zplane_2D_mesh(self.femmesh):
+            self.domain = "2dPlaneStress"
+        else:
+            self.domain = "3d"
+        f.write("domain " + self.domain + "\n")
 
     def write_output_manager_record(self, f):
         """ OutputManager
