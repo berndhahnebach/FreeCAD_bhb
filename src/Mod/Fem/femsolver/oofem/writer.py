@@ -527,41 +527,82 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             # begin and bc number
             line_begin = "BoundaryCondition {0}  loadTimeFunction 1".format(femobj["bc_number"])
 
-            # dofs
+            # dofs and values, prescribed (http://www.oofem.org/forum/viewtopic.php?pid=7130#p7130)
             disp_obj = femobj["Object"]
-            if disp_obj.xDisplacement != 0.0 or disp_obj.yDisplacement != 0.0 or disp_obj.zDisplacement != 0.0:
-                FreeCAD.Console.PrintError("Prescribed displacement length values are ignored!\n")
             dofs_count = 0
             dofs_numbers = ""
+            val_value = ""
             if self.domain == "2dPlaneStress":
                 # x, y (FreeCAD) = u, v (OOFEM) = 1, 2 (dof numbers)
                 # z and 3 rotations are ignored
-                if disp_obj.xFix is True:
+                if (disp_obj.xFix is True) \
+                        and (disp_obj.xFree is False) \
+                        and (disp_obj.xDisplacement == 0.0):
                     dofs_count += 1
                     dofs_numbers += "1"
-                if disp_obj.yFix is True:
+                    val_value += " 0"
+                elif (disp_obj.xFix is False) \
+                        and (disp_obj.xFree is False) \
+                        and (disp_obj.xDisplacement != 0):
+                    dofs_count += 1
+                    dofs_numbers += " 1"
+                    val_value += " {0}".format(disp_obj.xDisplacement)
+                if (disp_obj.yFix is True) \
+                        and (disp_obj.yFree is False) \
+                        and (disp_obj.yDisplacement == 0.0):
                     dofs_count += 1
                     dofs_numbers += " 2"
+                    val_value += " 0"
+                elif (disp_obj.yFix is False) \
+                        and (disp_obj.yFree is False) \
+                        and (disp_obj.yDisplacement != 0):
+                    dofs_count += 1
+                    dofs_numbers += " 2"
+                    val_value += " {0}".format(disp_obj.yDisplacement)
             elif self.domain == "3d":
                 # x, y, z (FreeCAD) = u, v, w (OOFEM) = 1, 2, 3 (dof numbers)
                 # 3 rotations are ignored
-                if disp_obj.xFix is True:
+                if (disp_obj.xFix is True) \
+                        and (disp_obj.xFree is False) \
+                        and (disp_obj.xDisplacement == 0.0):
                     dofs_count += 1
                     dofs_numbers += "1"
-                if disp_obj.yFix is True:
+                    val_value += " 0"
+                elif (disp_obj.xFix is False) \
+                        and (disp_obj.xFree is False) \
+                        and (disp_obj.xDisplacement != 0):
+                    dofs_count += 1
+                    dofs_numbers += " 1"
+                    val_value += " {0}".format(disp_obj.xDisplacement)
+                if (disp_obj.yFix is True) \
+                        and (disp_obj.yFree is False) \
+                        and (disp_obj.yDisplacement == 0.0):
                     dofs_count += 1
                     dofs_numbers += " 2"
-                if disp_obj.zFix is True:
+                    val_value += " 0"
+                elif (disp_obj.yFix is False) \
+                        and (disp_obj.yFree is False) \
+                        and (disp_obj.yDisplacement != 0):
+                    dofs_count += 1
+                    dofs_numbers += " 2"
+                    val_value += " {0}".format(disp_obj.yDisplacement)
+                if (disp_obj.zFix is True) \
+                        and (disp_obj.zFree is False) \
+                        and (disp_obj.zDisplacement == 0.0):
                     dofs_count += 1
                     dofs_numbers += " 3"
-            # delete leading spaces
+                    val_value += " 0"
+                elif (disp_obj.zFix is False) \
+                        and (disp_obj.zFree is False) \
+                        and (disp_obj.zDisplacement != 0):
+                    dofs_count += 1
+                    dofs_numbers += " 3"
+                    val_value += " {0}".format(disp_obj.zDisplacement)
+            # delete leading spaces and create lines
             dofs_numbers = dofs_numbers.lstrip()
+            val_value = val_value.lstrip()
             line_dofs = "dofs {0} {1}".format(dofs_count, dofs_numbers)
-
-            # values, prescribed (http://www.oofem.org/forum/viewtopic.php?pid=7130#p7130)
-            val_count = dofs_count
-            val_value = (val_count * "0 ").rstrip()
-            line_values = "values {0} {1}".format(val_count, val_value)
+            line_values = "values {0} {1}".format(dofs_count, val_value)
 
             # set
             line_set = "set " + str(femobj["bc_number"] + self.cs_count)
