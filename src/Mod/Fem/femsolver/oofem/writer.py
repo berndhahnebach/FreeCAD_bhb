@@ -337,7 +337,8 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# Cross Section Record\n")
             f.write("#\n")
         cs_number = 1
-        mat_number = 1
+        self.material_objects[0]["mat_number"] = 1
+        mat_number = self.material_objects[0]["mat_number"]
         self.cs_set_number = 1  # set 1 will be the standard set for cross section record
         if self.domain == "2dPlaneStress":
             thickness = self.shellthickness_objects[0]["Object"].Thickness.getValueAs("mm")
@@ -386,7 +387,24 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# {}\n".format(67 * "*"))
             f.write("# Material Type Record\n")
             f.write("#\n")
-        f.write("IsoLE 1 d 0. E 15.0 n 0.25 talpha 1.0\n")
+            # same as CalculiX writer, but I can not believe this is right?!
+            f.write("# unit density: t/mm^3\n")
+            f.write("# unit Youngs Modulus: MPa = N/mm2\n")
+            f.write("# unit Thermal Expansion Coefficient: 1/K\n")
+        # the first mat object is taken for all elements
+        mat_obj = self.material_objects[0]["Object"]
+        mat_number = self.material_objects[0]["mat_number"]
+        ds = FreeCAD.Units.Quantity(mat_obj.Material["Density"])
+        ds_in_t_per_mm3 = float(ds.getValueAs("t/mm^3"))
+        ym = FreeCAD.Units.Quantity(mat_obj.Material["YoungsModulus"])
+        ym_in_MPa = ym.getValueAs("MPa")
+        pr = float(mat_obj.Material["PoissonRatio"])
+        th = FreeCAD.Units.Quantity(mat_obj.Material["ThermalExpansionCoefficient"])
+        th_in_mm_per_mmK = th.getValueAs("mm/mm/K")
+        f.write(
+            "IsoLE {0}  d {1}  E {2}  n {3}  talpha {4}\n"
+            .format(mat_number, ds_in_t_per_mm3, ym_in_MPa, pr, th_in_mm_per_mmK)
+        )
 
     def write_boundary_condition_record(self, f):
         if self.write_comments is True:
