@@ -775,6 +775,19 @@ class _SolverElmer(CommandManager):
         self.do_activated = "add_obj_on_gui_noset_edit"
 
 
+class _SolverOofem(CommandManager):
+    "The FEM_SolverOOFEM command definition"
+
+    def __init__(self):
+        super(_SolverOofem, self).__init__()
+        self.pixmap = "FEM_SolverStandard"
+        self.menuetext = "Solver OOFEM"
+        self.accel = "S, O"
+        self.tooltip = "Creates a FEM solver OOFEM"
+        self.is_active = "with_analysis"
+        self.do_activated = "add_obj_on_gui_noset_edit"
+
+
 class _SolverRun(CommandManager):
     "The FEM_SolverRun command definition"
 
@@ -973,6 +986,10 @@ FreeCADGui.addCommand(
 FreeCADGui.addCommand(
     "FEM_SolverElmer",
     _SolverElmer()
+)
+FreeCADGui.addCommand(
+    "FEM_SolverOOFEM",
+    _SolverOofem()
 )
 FreeCADGui.addCommand(
     "FEM_SolverRun",
