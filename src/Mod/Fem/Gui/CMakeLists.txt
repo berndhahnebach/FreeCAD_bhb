@@ -64,6 +64,7 @@ set(FemGui_UIC_SRCS
     DlgSettingsFemInOutVtk.ui
     DlgSettingsFemMaterial.ui
     DlgSettingsFemZ88.ui
+    DlgSettingsFemOOFEM.ui
     TaskCreateNodeSet.ui
     TaskObjectName.ui
     TaskFemConstraint.ui
@@ -132,6 +133,9 @@ SET(FemGui_DLG_SRCS
     DlgSettingsFemZ88.ui
     DlgSettingsFemZ88Imp.cpp
     DlgSettingsFemZ88Imp.h
+    DlgSettingsFemOOFEM.ui
+    DlgSettingsFemOOFEMImp.cpp
+    DlgSettingsFemOOFEMImp.h
     TaskFemConstraint.ui
     TaskFemConstraint.cpp
     TaskFemConstraint.h
