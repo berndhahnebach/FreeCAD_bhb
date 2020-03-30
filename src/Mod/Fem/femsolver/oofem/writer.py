@@ -341,9 +341,20 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
 
         # count boundary conditions including loads
         # delete force constraints on Edges and Faces
+        for femobj in self.force_objects:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+            if (femobj["RefShapeType"] == "Edge") or (femobj["RefShapeType"] == "Face"):
+                FreeCAD.Console.PrintError(
+                    "Constraint force on Edges and Faces will be ignored!\n"
+                )
+                break
+        tmp_list = [
+            femobj for femobj in self.force_objects if femobj["RefShapeType"] == "Vertex"
+        ]
+        self.force_objects = tmp_list
         # count bcs
         bc_count = 0
-        all_bcs = self.displacement_objects
+        all_bcs = self.displacement_objects + self.force_objects
         for femobj in all_bcs:
             # femobj --> dict, FreeCAD document object is femobj["Object"]
             bc_count += 1
@@ -622,8 +633,70 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("#\n")
             f.write("# {}\n".format(67 * "*"))
             f.write("# Nodal Load Record\n")
-            f.write("#\n")
-        f.write("NodalLoad 3 loadTimeFunction 1 dofs 2 1 2 components 2 2.5 0.0 set 3\n")
+
+        # check shape type of reference shape and get node loads
+        self.get_constraints_force_nodeloads()
+        # get nodes, this only makes sense for forces on vertexes, real node loads
+        for femobj in self.force_objects:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+            femobj["Nodes"] = meshtools.get_femnodes_by_femobj_with_references(
+                self.femmesh,
+                femobj
+            )
+        # print(self.force_objects)
+
+        # write node loads
+        for femobj in self.force_objects:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+            if self.write_comments is True:
+                f.write("#\n")
+                # write the shapes the nodes are applied to
+                for ref_shape in femobj["NodeLoadTable"]:
+                    f.write("# " + ref_shape[0] + "\n")
+
+            # begin and bc number
+            line_begin = "NodalLoad {0}  loadTimeFunction 1".format(femobj["bc_number"])
+
+            # dofs and load values
+            # get component load values
+            direction_vec = femobj["Object"].DirectionVector
+            # this only work for loads on Vertexes!
+            node_load = femobj["Object"].Force / len(femobj["Nodes"])
+            v1 = 0.0
+            v2 = 0.0
+            v3 = 0.0
+            if (direction_vec.x != 0.0):
+                v1 = direction_vec.x * node_load
+            if (direction_vec.y != 0.0):
+                v2 = direction_vec.y * node_load
+            if (direction_vec.z != 0.0):
+                v3 = direction_vec.z * node_load
+
+            # write dofs and component values
+            if self.domain == "2dPlaneStress":
+                dofs_count = "2"
+                dofs_numbers = "1 2"
+                line_dofs = "dofs {0} {1}".format(dofs_count, dofs_numbers)
+                load_component_count = "2"
+                line_values = "components {0} {1} {2}".format(load_component_count, v1, v2)
+            elif self.domain == "3d":
+                dofs_count = "3"
+                dofs_numbers = "1 2 3"
+                line_dofs = "dofs {0} {1}".format(dofs_count, dofs_numbers)
+                load_component_count = "3"
+                line_values = "components {0} {1} {2} {3}".format(load_component_count, v1, v2, v3)
+
+            # set
+            line_set = "set {0}".format(femobj["bc_number"] + self.cs_count)
+
+            # build and write line
+            line_all = (
+                line_begin + "  "
+                + line_dofs + "  "
+                + line_values + "  "
+                + line_set + "\n"
+            )
+            f.write(line_all)
 
     def write_time_function_record(self, f):
         if self.write_comments is True:
@@ -673,7 +746,18 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             line_nodes = line_nodes.rstrip()  # remove white space at the end
             f.write(line_start + "  " + line_nodes + "\n")
 
-        # one of the bc set lines is used for the node load set too
+        # node load sets
+        for femobj in self.force_objects:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+            line_start = (
+                "Set {0}  nodes {1}"
+                .format((femobj["bc_number"] + self.cs_count), len(femobj["Nodes"]))
+            )
+            line_nodes = ""  # init
+            for n in femobj["Nodes"]:
+                line_nodes = line_nodes + str(n) + " "
+            line_nodes = line_nodes.rstrip()  # remove white space at the end
+            f.write(line_start + "  " + line_nodes + "\n")
 
     def write_footer(self, f):
         if self.write_comments is True:
