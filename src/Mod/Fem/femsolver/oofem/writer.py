@@ -336,7 +336,20 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# {}\n".format(67 * "*"))
             f.write("# Cross Section Record\n")
             f.write("#\n")
-        f.write("SimpleCS 1 thick 1.0 width 1.0 material 1 set 1\n")
+        cs_number = 1
+        mat_number = 1
+        self.cs_set_number = 1  # set 1 will be the standard set for cross section record
+        if self.domain == "2dPlaneStress":
+            thickness = self.shellthickness_objects[0]["Object"].Thickness.getValueAs("mm")
+            f.write(
+                "SimpleCS {0}  thick {1}  material {2}  set {3}\n"
+                .format(cs_number, thickness, mat_number, self.cs_set_number)
+            )
+        elif self.domain == "3d":
+            f.write(
+                "SimpleCS {0}  material {1}  set {2}\n"
+                .format(cs_number, mat_number, self.cs_set_number)
+            )
 
     def write_material_type_record(self, f):
         """ *MaterialType (num#) (in) d # (rn)
