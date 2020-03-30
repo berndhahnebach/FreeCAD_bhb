@@ -340,8 +340,14 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
         mat_count = len(self.material_objects)
 
         # count boundary conditions including loads
-        # TODO get count
-        bc_count = 3
+        # delete force constraints on Edges and Faces
+        # count bcs
+        bc_count = 0
+        all_bcs = self.displacement_objects
+        for femobj in all_bcs:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+            bc_count += 1
+            femobj["bc_number"] = bc_count
 
         # count initial conditions
         # no initial conditions are supported, thus = 0
@@ -352,8 +358,10 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
         tltf_count = 1
 
         # count node- and elementsets
-        # TODO get count ...
-        set_count = 3
+        # on set for every boundary condition or load
+        # one material and one cross section is used for all elements
+        # set 1 is used for this
+        set_count = bc_count + self.cs_count
 
         # write values
         f.write(
@@ -505,8 +513,67 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# {}\n".format(67 * "*"))
             f.write("# Boundary Condition Record\n")
             f.write("#\n")
-        f.write("BoundaryCondition 1 loadTimeFunction 1 dofs 2 1 2 values 1 0.0 set 2\n")
-        f.write("BoundaryCondition 2 loadTimeFunction 1 dofs 1 2 values 1 0.0 set 3\n")
+
+        # displacement constraints
+        # get nodes of displacement constraints
+        self.get_constraints_displacement_nodes()
+
+        # write displacement constraints
+        if self.write_comments is True:
+            f.write("# FreeCAD displacement constraints\n")
+        for femobj in self.displacement_objects:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+
+            # begin and bc number
+            line_begin = "BoundaryCondition {0}  loadTimeFunction 1".format(femobj["bc_number"])
+
+            # dofs
+            disp_obj = femobj["Object"]
+            if disp_obj.xDisplacement != 0.0 or disp_obj.yDisplacement != 0.0 or disp_obj.zDisplacement != 0.0:
+                FreeCAD.Console.PrintError("Prescribed displacement length values are ignored!\n")
+            dofs_count = 0
+            dofs_numbers = ""
+            if self.domain == "2dPlaneStress":
+                # x, y (FreeCAD) = u, v (OOFEM) = 1, 2 (dof numbers)
+                # z and 3 rotations are ignored
+                if disp_obj.xFix is True:
+                    dofs_count += 1
+                    dofs_numbers += "1"
+                if disp_obj.yFix is True:
+                    dofs_count += 1
+                    dofs_numbers += " 2"
+            elif self.domain == "3d":
+                # x, y, z (FreeCAD) = u, v, w (OOFEM) = 1, 2, 3 (dof numbers)
+                # 3 rotations are ignored
+                if disp_obj.xFix is True:
+                    dofs_count += 1
+                    dofs_numbers += "1"
+                if disp_obj.yFix is True:
+                    dofs_count += 1
+                    dofs_numbers += " 2"
+                if disp_obj.zFix is True:
+                    dofs_count += 1
+                    dofs_numbers += " 3"
+            # delete leading spaces
+            dofs_numbers = dofs_numbers.lstrip()
+            line_dofs = "dofs {0} {1}".format(dofs_count, dofs_numbers)
+
+            # values, prescribed (http://www.oofem.org/forum/viewtopic.php?pid=7130#p7130)
+            val_count = dofs_count
+            val_value = (val_count * "0 ").rstrip()
+            line_values = "values {0} {1}".format(val_count, val_value)
+
+            # set
+            line_set = "set " + str(femobj["bc_number"] + self.cs_count)
+
+            # build  and write line
+            line_all = (
+                line_begin + "  "
+                + line_dofs + "  "
+                + line_values + "  "
+                + line_set + "\n"
+            )
+            f.write(line_all)
 
     def write_nodal_load_record(self, f):
         if self.write_comments is True:
@@ -552,8 +619,20 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
         if self.write_comments is True:
             f.write("#\n")
 
-        f.write("Set 2 nodes 2 1 2\n")
-        f.write("Set 3 nodes 2 7 8\n")
+        # bc displacement constraints sets
+        for femobj in self.displacement_objects:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+            line_start = (
+                "Set {0}  nodes {1}"
+                .format((femobj["bc_number"] + self.cs_count), len(femobj["Nodes"]))
+            )
+            line_nodes = ""  # init
+            for n in femobj["Nodes"]:
+                line_nodes = line_nodes + str(n) + " "
+            line_nodes = line_nodes.rstrip()  # remove white space at the end
+            f.write(line_start + "  " + line_nodes + "\n")
+
+        # one of the bc set lines is used for the node load set too
 
     def write_footer(self, f):
         if self.write_comments is True:
