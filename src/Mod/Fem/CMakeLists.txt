@@ -242,6 +242,8 @@ SET(FemSolverFenics_SRCS
 SET(FemSolverOOFEM_SRCS
     femsolver/oofem/__init__.py
     femsolver/oofem/solver.py
+    femsolver/oofem/tasks.py
+    femsolver/oofem/writer.py
 )
 
 SET(FemSolverZ88_SRCS

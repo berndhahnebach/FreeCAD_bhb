@@ -32,7 +32,7 @@ import os
 
 import FreeCAD
 
-# from . import tasks
+from . import tasks
 from .. import run
 from .. import solverbase
 from femtools import femutils
