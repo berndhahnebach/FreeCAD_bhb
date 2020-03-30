@@ -354,7 +354,7 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
         self.force_objects = tmp_list
         # count bcs
         bc_count = 0
-        all_bcs = self.displacement_objects + self.force_objects
+        all_bcs = self.displacement_objects + self.fixed_objects + self.force_objects
         for femobj in all_bcs:
             # femobj --> dict, FreeCAD document object is femobj["Object"]
             bc_count += 1
@@ -627,6 +627,43 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             )
             f.write(line_all)
 
+        # separator line
+        if self.write_comments is True:
+            f.write("#\n")
+
+        # fixed constraints
+        # get nodes of fixed constraints
+        self.get_constraints_fixed_nodes()
+
+        # write fixed constraints
+        if self.write_comments is True:
+            f.write("# FreeCAD fixed constraints\n")
+        for femobj in self.fixed_objects:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+
+            # begin and bc number
+            line_begin = "BoundaryCondition {0}  loadTimeFunction 1".format(femobj["bc_number"])
+
+            # dofs and values
+            if self.domain == "2dPlaneStress":
+                line_dofs = "dofs 2 1 2"
+                line_values = "values 2 0 0"
+            elif self.domain == "3d":
+                line_dofs = "dofs 3 1 2 3"
+                line_values = "values 3 0 0 0"
+
+            # set
+            line_set = "set {0}".format(femobj["bc_number"] + self.cs_count)
+
+            # build  and write line
+            line_all = (
+                line_begin + "  "
+                + line_dofs + "  "
+                + line_values + "  "
+                + line_set + "\n"
+            )
+            f.write(line_all)
+
     def write_nodal_load_record(self, f):
         if self.write_comments is True:
             f.write("#\n")
@@ -735,6 +772,19 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
 
         # bc displacement constraints sets
         for femobj in self.displacement_objects:
+            # femobj --> dict, FreeCAD document object is femobj["Object"]
+            line_start = (
+                "Set {0}  nodes {1}"
+                .format((femobj["bc_number"] + self.cs_count), len(femobj["Nodes"]))
+            )
+            line_nodes = ""  # init
+            for n in femobj["Nodes"]:
+                line_nodes = line_nodes + str(n) + " "
+            line_nodes = line_nodes.rstrip()  # remove white space at the end
+            f.write(line_start + "  " + line_nodes + "\n")
+
+        # bc fixed constraints sets
+        for femobj in self.fixed_objects:
             # femobj --> dict, FreeCAD document object is femobj["Object"]
             line_start = (
                 "Set {0}  nodes {1}"
