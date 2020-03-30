@@ -84,7 +84,7 @@ class Solve(run.Solve):
             # TODO do not run solver, do not try to read results in a smarter way than an Exception
             raise Exception("Error on writing OOFEM input file.\n")
         infile = _inputFileName + ".in"
-        FreeCAD.Console.PrintError("OOFEM-info: infile: {} \n\n".format(infile))
+        FreeCAD.Console.PrintLog("OOFEM-info: infile: {} \n\n".format(infile))
 
         self.pushStatus("Executing solver...\n")
         binary = settings.get_binary("oofem")
@@ -110,10 +110,10 @@ class Results(run.Results):
         self.load_results_oofem()
 
     def load_results_oofem(self):
-        res_file = os.path.join(self.directory, "2DPlaneStress.out.m0.1.vtu")
-        FreeCAD.Console.PrintError("OOFEM-info: refile: " + res_file + " \n")
+        res_file = os.path.join(self.directory, _inputFileName + ".out.m0.1.vtu")
+        FreeCAD.Console.PrintLog("OOFEM-info: refile: " + res_file + " \n")
         if os.path.isfile(res_file):
-            result_name_prefix = "OOFEM_" + "2DPlaneStress"
+            result_name_prefix = "OOFEM_static_results"
             from feminout.importVTKResults import importVtkVtkResult as importVTU
             resobj = importVTU(res_file, result_name_prefix)
             if FreeCAD.GuiUp:
