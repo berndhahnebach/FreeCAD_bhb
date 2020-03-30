@@ -76,6 +76,14 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             FreeCAD.Console.PrintError(message)
             self.shellthickness_objects = [self.shellthickness_objects[0]]
 
+        # time function container
+        # add a container for time functions, containing the time functions
+        # we only have one time function, thus there will be only one dictionary inside
+        # only the number of this one time function is saved inside the dict
+        # this time function gets the number 1
+        self.timefunction_objects = [{}]
+        self.timefunction_objects[0]["tf_number"] = 1
+
         # working dir and input file
         from os.path import join
         self.main_file_name = self.mesh_object.Name + ".in"
@@ -365,8 +373,7 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
         ic_count = 0
 
         # count time functions and their associated records
-        # no special time functions are supported, thus = 1
-        tltf_count = 1
+        tltf_count = len(self.timefunction_objects)
 
         # count node- and elementsets
         # on set for every boundary condition or load
@@ -536,7 +543,10 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             # femobj --> dict, FreeCAD document object is femobj["Object"]
 
             # begin and bc number
-            line_begin = "BoundaryCondition {0}  loadTimeFunction 1".format(femobj["bc_number"])
+            line_begin = (
+                "BoundaryCondition {0}  loadTimeFunction {1}"
+                .format(femobj["bc_number"], self.timefunction_objects[0]["tf_number"])
+            )
 
             # dofs and values, prescribed (http://www.oofem.org/forum/viewtopic.php?pid=7130#p7130)
             disp_obj = femobj["Object"]
@@ -642,7 +652,10 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             # femobj --> dict, FreeCAD document object is femobj["Object"]
 
             # begin and bc number
-            line_begin = "BoundaryCondition {0}  loadTimeFunction 1".format(femobj["bc_number"])
+            line_begin = (
+                "BoundaryCondition {0}  loadTimeFunction {1}"
+                .format(femobj["bc_number"], self.timefunction_objects[0]["tf_number"])
+            )
 
             # dofs and values
             if self.domain == "2dPlaneStress":
@@ -692,7 +705,10 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
                     f.write("# " + ref_shape[0] + "\n")
 
             # begin and bc number
-            line_begin = "NodalLoad {0}  loadTimeFunction 1".format(femobj["bc_number"])
+            line_begin = (
+                "NodalLoad {0}  loadTimeFunction {1}"
+                .format(femobj["bc_number"], self.timefunction_objects[0]["tf_number"])
+            )
 
             # dofs and load values
             # get component load values
@@ -742,7 +758,10 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# {}\n".format(67 * "*"))
             f.write("# Time Function Record\n")
             f.write("#\n")
-        f.write("ConstantFunction 1 f(t) 1.0\n")
+        f.write(
+            "ConstantFunction {0}  f(t) 1.0\n"
+            .format(self.timefunction_objects[0]["tf_number"])
+        )
 
     def write_set_record(self, f):
         """ Set (num#) (in)
