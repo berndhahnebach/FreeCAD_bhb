@@ -274,6 +274,7 @@ SET(FemTestsApp_SRCS
     femtest/app/test_result.py
     femtest/app/test_solver_calculix.py
     femtest/app/test_solver_elmer.py
+    femtest/app/test_solver_oofem.py
     femtest/app/test_solver_z88.py
 )
 
@@ -349,6 +350,13 @@ SET(FemTestsMesh_SRCS
     femtest/data/mesh/tetra10_mesh.vtk
     femtest/data/mesh/tetra10_mesh.yml
     femtest/data/mesh/tetra10_mesh.z88
+)
+
+SET(FemTestsOofem_SRCS
+    femtest/data/oofem/__init__.py
+    femtest/data/oofem/ccxcantilever_nodeload.in
+    femtest/data/oofem/ccxcantilever_prescribeddisplacement.in
+    femtest/data/oofem/planestress2d.in
 )
 
 SET(FemTestsOpen_SRCS
@@ -434,6 +442,7 @@ SET(FemAllScripts
     ${FemTestsCcx_SRCS}
     ${FemTestsElmer_SRCS}
     ${FemTestsMesh_SRCS}
+    ${FemTestsOofem_SRCS}
     ${FemTestsOpen_SRCS}
     ${FemTestsZ88Main_SRCS}
     ${FemTestsZ88Ccxcantifl_SRCS}
@@ -471,6 +480,7 @@ INSTALL(FILES ${FemTestsFiles_SRCS} DESTINATION Mod/Fem/femtest/data)
 INSTALL(FILES ${FemTestsCcx_SRCS} DESTINATION Mod/Fem/femtest/data/calculix)
 INSTALL(FILES ${FemTestsElmer_SRCS} DESTINATION Mod/Fem/femtest/data/elmer)
 INSTALL(FILES ${FemTestsMesh_SRCS} DESTINATION Mod/Fem/femtest/data/mesh)
+INSTALL(FILES ${FemTestsOofem_SRCS} DESTINATION Mod/Fem/femtest/data/oofem)
 INSTALL(FILES ${FemTestsOpen_SRCS} DESTINATION Mod/Fem/femtest/data/open)
 INSTALL(FILES ${FemTestsZ88Main_SRCS} DESTINATION Mod/Fem/femtest/data/z88)
 INSTALL(FILES ${FemTestsZ88Ccxcantifl_SRCS} DESTINATION Mod/Fem/femtest/data/z88/ccxcantilever_faceload)

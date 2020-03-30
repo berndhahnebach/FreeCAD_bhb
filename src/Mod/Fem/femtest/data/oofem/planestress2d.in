@@ -1,0 +1,117 @@
+#
+# *******************************************************************
+# OOFEM Output File Name Record
+#
+Mesh.out
+#
+#
+# *******************************************************************
+# Description Record
+#
+TestSolverOofem
+#
+#
+# *******************************************************************
+# Analysis and extra Output Modules Record
+#
+LinearStatic  nsteps 1  nmodules 1
+vtkxml tstep_all domain_all  primvars 1 1  vars 5 1 2 4 5 27  stype 2
+#
+#
+# *******************************************************************
+# Domain Record
+#
+domain 2dPlaneStress
+#
+#
+# *******************************************************************
+# Output Manager Record
+#
+OutputManager tstep_all dofman_all element_all
+#
+#
+# *******************************************************************
+# Components Size Record
+#
+ndofman 8  nelem 5  ncrosssect 1  nmat 1  nbc 3  nic 0  nltf 1  nset 4
+#
+#
+# *******************************************************************
+# DOF Manager Record
+#
+#
+# *******************************************************************
+# Node and Element Records
+#
+# Node Records
+#
+node 1 coords 3  0.0  0.0  0.0
+node 2 coords 3  0.0  4.0  0.0
+node 3 coords 3  2.0  2.0  0.0
+node 4 coords 3  3.0  1.0  0.0
+node 5 coords 3  8.0  0.8  0.0
+node 6 coords 3  7.0  3.0  0.0
+node 7 coords 3  9.0  0.0  0.0
+node 8 coords 3  9.0  4.0  0.0
+#
+# Element Records
+#
+PlaneStress2d 1 nodes 4  1 4 3 2  NIP 1
+PlaneStress2d 2 nodes 4  1 7 5 4  NIP 1
+PlaneStress2d 3 nodes 4  4 5 6 3  NIP 1
+PlaneStress2d 4 nodes 4  3 6 8 2  NIP 1
+PlaneStress2d 5 nodes 4  5 7 8 6  NIP 1
+#
+#
+# *******************************************************************
+# Cross Section Record
+#
+SimpleCS 1  thick 1.0  material 1  set 1
+#
+#
+# *******************************************************************
+# Material Type Record
+#
+# unit density: t/mm^3
+# unit Youngs Modulus: MPa = N/mm2
+# unit Thermal Expansion Coefficient: 1/K
+IsoLE 1  d 0.0  E 15.0  n 0.25  talpha 1.0
+#
+#
+# *******************************************************************
+# Boundary Condition Record
+#
+# FreeCAD displacement constraints
+BoundaryCondition 1  loadTimeFunction 1  dofs 2 1 2  values 2 0 0  set 2
+BoundaryCondition 2  loadTimeFunction 1  dofs 1 2  values 1 0  set 3
+#
+# FreeCAD fixed constraints
+#
+#
+# *******************************************************************
+# Nodal Load Record
+#
+# node load on shape: Face:Vertex3
+# node load on shape: Face:Vertex4
+NodalLoad 3  loadTimeFunction 1  dofs 2 1 2  components 2 2.5 0.0  set 4
+#
+#
+# *******************************************************************
+# Time Function Record
+#
+ConstantFunction 1  f(t) 1.0
+#
+#
+# *******************************************************************
+# Set Record
+#
+Set 1  elementranges {(1 5)}
+#
+Set 2  nodes 2  1 2
+Set 3  nodes 2  7 8
+Set 4  nodes 2  7 8
+#
+#
+# *******************************************************************
+# End of Input File
+#

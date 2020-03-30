@@ -1,0 +1,411 @@
+#
+# *******************************************************************
+# OOFEM Output File Name Record
+#
+Mesh.out
+#
+#
+# *******************************************************************
+# Description Record
+#
+TestSolverOofem
+#
+#
+# *******************************************************************
+# Analysis and extra Output Modules Record
+#
+LinearStatic  nsteps 1  nmodules 1
+vtkxml tstep_all domain_all  primvars 1 1  vars 5 1 2 4 5 27  stype 2
+#
+#
+# *******************************************************************
+# Domain Record
+#
+domain 3d
+#
+#
+# *******************************************************************
+# Output Manager Record
+#
+OutputManager tstep_all dofman_all element_all
+#
+#
+# *******************************************************************
+# Components Size Record
+#
+ndofman 228  nelem 79  ncrosssect 1  nmat 1  nbc 2  nic 0  nltf 1  nset 3
+#
+#
+# *******************************************************************
+# DOF Manager Record
+#
+#
+# *******************************************************************
+# Node and Element Records
+#
+# Node Records
+#
+node 1 coords 3  8000.0  1000.0  0.0
+node 2 coords 3  8000.0  1000.0  1000.0
+node 3 coords 3  8000.0  0.0  0.0
+node 4 coords 3  8000.0  0.0  1000.0
+node 5 coords 3  0.0  1000.0  0.0
+node 6 coords 3  0.0  1000.0  1000.0
+node 7 coords 3  0.0  0.0  0.0
+node 8 coords 3  0.0  0.0  1000.0
+node 9 coords 3  728.0  1000.0  1000.0
+node 10 coords 3  1456.0  1000.0  1000.0
+node 11 coords 3  2184.0  1000.0  1000.0
+node 12 coords 3  2912.0  1000.0  1000.0
+node 13 coords 3  3640.0  1000.0  1000.0
+node 14 coords 3  4368.0  1000.0  1000.0
+node 15 coords 3  5096.0  1000.0  1000.0
+node 16 coords 3  5824.0  1000.0  1000.0
+node 17 coords 3  6552.0  1000.0  1000.0
+node 18 coords 3  7280.0  1000.0  1000.0
+node 19 coords 3  728.0  0.0  1000.0
+node 20 coords 3  1456.0  0.0  1000.0
+node 21 coords 3  2184.0  0.0  1000.0
+node 22 coords 3  2912.0  0.0  1000.0
+node 23 coords 3  3640.0  0.0  1000.0
+node 24 coords 3  4368.0  0.0  1000.0
+node 25 coords 3  5096.0  0.0  1000.0
+node 26 coords 3  5824.0  0.0  1000.0
+node 27 coords 3  6552.0  0.0  1000.0
+node 28 coords 3  7280.0  0.0  1000.0
+node 29 coords 3  728.0  1000.0  0.0
+node 30 coords 3  1456.0  1000.0  0.0
+node 31 coords 3  2184.0  1000.0  0.0
+node 32 coords 3  2912.0  1000.0  0.0
+node 33 coords 3  3640.0  1000.0  0.0
+node 34 coords 3  4368.0  1000.0  0.0
+node 35 coords 3  5096.0  1000.0  0.0
+node 36 coords 3  5824.0  1000.0  0.0
+node 37 coords 3  6552.0  1000.0  0.0
+node 38 coords 3  7280.0  1000.0  0.0
+node 39 coords 3  728.0  0.0  0.0
+node 40 coords 3  1456.0  0.0  0.0
+node 41 coords 3  2184.0  0.0  0.0
+node 42 coords 3  2912.0  0.0  0.0
+node 43 coords 3  3640.0  0.0  0.0
+node 44 coords 3  4368.0  0.0  0.0
+node 45 coords 3  5096.0  0.0  0.0
+node 46 coords 3  5824.0  0.0  0.0
+node 47 coords 3  6552.0  0.0  0.0
+node 48 coords 3  7280.0  0.0  0.0
+node 49 coords 3  8000.0  500.0  500.0
+node 50 coords 3  0.0  500.0  500.0
+node 51 coords 3  4731.99999977  500.000001086  499.999998599
+node 52 coords 3  0.0  500.0  1000.0
+node 53 coords 3  364.0  1000.0  1000.0
+node 54 coords 3  1092.0  1000.0  1000.0
+node 55 coords 3  1820.0  1000.0  1000.0
+node 56 coords 3  2548.0  1000.0  1000.0
+node 57 coords 3  3276.0  1000.0  1000.0
+node 58 coords 3  4004.0  1000.0  1000.0
+node 59 coords 3  4732.0  1000.0  1000.0
+node 60 coords 3  5460.0  1000.0  1000.0
+node 61 coords 3  6188.0  1000.0  1000.0
+node 62 coords 3  6916.0  1000.0  1000.0
+node 63 coords 3  7640.0  1000.0  1000.0
+node 64 coords 3  8000.0  500.0  1000.0
+node 65 coords 3  364.0  0.0  1000.0
+node 66 coords 3  1092.0  0.0  1000.0
+node 67 coords 3  1820.0  0.0  1000.0
+node 68 coords 3  2548.0  0.0  1000.0
+node 69 coords 3  3276.0  0.0  1000.0
+node 70 coords 3  4004.0  0.0  1000.0
+node 71 coords 3  4732.0  0.0  1000.0
+node 72 coords 3  5460.0  0.0  1000.0
+node 73 coords 3  6188.0  0.0  1000.0
+node 74 coords 3  6916.0  0.0  1000.0
+node 75 coords 3  7640.0  0.0  1000.0
+node 76 coords 3  0.0  500.0  0.0
+node 77 coords 3  364.0  1000.0  0.0
+node 78 coords 3  1092.0  1000.0  0.0
+node 79 coords 3  1820.0  1000.0  0.0
+node 80 coords 3  2548.0  1000.0  0.0
+node 81 coords 3  3276.0  1000.0  0.0
+node 82 coords 3  4004.0  1000.0  0.0
+node 83 coords 3  4732.0  1000.0  0.0
+node 84 coords 3  5460.0  1000.0  0.0
+node 85 coords 3  6188.0  1000.0  0.0
+node 86 coords 3  6916.0  1000.0  0.0
+node 87 coords 3  7640.0  1000.0  0.0
+node 88 coords 3  8000.0  500.0  0.0
+node 89 coords 3  364.0  0.0  0.0
+node 90 coords 3  1092.0  0.0  0.0
+node 91 coords 3  1820.0  0.0  0.0
+node 92 coords 3  2548.0  0.0  0.0
+node 93 coords 3  3276.0  0.0  0.0
+node 94 coords 3  4004.0  0.0  0.0
+node 95 coords 3  4732.0  0.0  0.0
+node 96 coords 3  5460.0  0.0  0.0
+node 97 coords 3  6188.0  0.0  0.0
+node 98 coords 3  6916.0  0.0  0.0
+node 99 coords 3  7640.0  0.0  0.0
+node 100 coords 3  8000.0  1000.0  500.0
+node 101 coords 3  0.0  1000.0  500.0
+node 102 coords 3  8000.0  0.0  500.0
+node 103 coords 3  0.0  0.0  500.0
+node 104 coords 3  364.0  500.0  1000.0
+node 105 coords 3  728.0  500.0  1000.0
+node 106 coords 3  1092.0  500.0  1000.0
+node 107 coords 3  1456.0  500.0  1000.0
+node 108 coords 3  1820.0  500.0  1000.0
+node 109 coords 3  2184.0  500.0  1000.0
+node 110 coords 3  2548.0  500.0  1000.0
+node 111 coords 3  3276.0  500.0  1000.0
+node 112 coords 3  3640.0  500.0  1000.0
+node 113 coords 3  4004.0  500.0  1000.0
+node 114 coords 3  4368.0  500.0  1000.0
+node 115 coords 3  4732.0  500.0  1000.0
+node 116 coords 3  5096.0  500.0  1000.0
+node 117 coords 3  5460.0  500.0  1000.0
+node 118 coords 3  5824.0  500.0  1000.0
+node 119 coords 3  6188.0  500.0  1000.0
+node 120 coords 3  6552.0  500.0  1000.0
+node 121 coords 3  6916.0  500.0  1000.0
+node 122 coords 3  7640.0  500.0  1000.0
+node 123 coords 3  2912.0  500.0  1000.0
+node 124 coords 3  7280.0  500.0  1000.0
+node 125 coords 3  364.0  500.0  0.0
+node 126 coords 3  1092.0  500.0  0.0
+node 127 coords 3  728.0  500.0  0.0
+node 128 coords 3  1820.0  500.0  0.0
+node 129 coords 3  1456.0  500.0  0.0
+node 130 coords 3  2548.0  500.0  0.0
+node 131 coords 3  2184.0  500.0  0.0
+node 132 coords 3  3640.0  500.0  0.0
+node 133 coords 3  3276.0  500.0  0.0
+node 134 coords 3  4004.0  500.0  0.0
+node 135 coords 3  5096.0  500.0  0.0
+node 136 coords 3  4732.0  500.0  0.0
+node 137 coords 3  5460.0  500.0  0.0
+node 138 coords 3  6188.0  500.0  0.0
+node 139 coords 3  5824.0  500.0  0.0
+node 140 coords 3  6916.0  500.0  0.0
+node 141 coords 3  6552.0  500.0  0.0
+node 142 coords 3  7640.0  500.0  0.0
+node 143 coords 3  2912.0  500.0  0.0
+node 144 coords 3  4368.0  500.0  0.0
+node 145 coords 3  7280.0  500.0  0.0
+node 146 coords 3  364.0  1000.0  500.0
+node 147 coords 3  728.0  1000.0  500.0
+node 148 coords 3  1092.0  1000.0  500.0
+node 149 coords 3  1456.0  1000.0  500.0
+node 150 coords 3  1820.0  1000.0  500.0
+node 151 coords 3  2184.0  1000.0  500.0
+node 152 coords 3  2548.0  1000.0  500.0
+node 153 coords 3  3276.0  1000.0  500.0
+node 154 coords 3  3640.0  1000.0  500.0
+node 155 coords 3  4004.0  1000.0  500.0
+node 156 coords 3  4368.0  1000.0  500.0
+node 157 coords 3  4732.0  1000.0  500.0
+node 158 coords 3  5096.0  1000.0  500.0
+node 159 coords 3  5460.0  1000.0  500.0
+node 160 coords 3  5824.0  1000.0  500.0
+node 161 coords 3  6188.0  1000.0  500.0
+node 162 coords 3  6552.0  1000.0  500.0
+node 163 coords 3  6916.0  1000.0  500.0
+node 164 coords 3  7640.0  1000.0  500.0
+node 165 coords 3  2912.0  1000.0  500.0
+node 166 coords 3  7280.0  1000.0  500.0
+node 167 coords 3  364.0  0.0  500.0
+node 168 coords 3  1092.0  0.0  500.0
+node 169 coords 3  728.0  0.0  500.0
+node 170 coords 3  1820.0  0.0  500.0
+node 171 coords 3  1456.0  0.0  500.0
+node 172 coords 3  2548.0  0.0  500.0
+node 173 coords 3  2184.0  0.0  500.0
+node 174 coords 3  3640.0  0.0  500.0
+node 175 coords 3  3276.0  0.0  500.0
+node 176 coords 3  4004.0  0.0  500.0
+node 177 coords 3  5096.0  0.0  500.0
+node 178 coords 3  4732.0  0.0  500.0
+node 179 coords 3  5460.0  0.0  500.0
+node 180 coords 3  6188.0  0.0  500.0
+node 181 coords 3  5824.0  0.0  500.0
+node 182 coords 3  6916.0  0.0  500.0
+node 183 coords 3  6552.0  0.0  500.0
+node 184 coords 3  7640.0  0.0  500.0
+node 185 coords 3  2912.0  0.0  500.0
+node 186 coords 3  4368.0  0.0  500.0
+node 187 coords 3  7280.0  0.0  500.0
+node 188 coords 3  8000.0  250.0  250.0
+node 189 coords 3  8000.0  250.0  750.0
+node 190 coords 3  8000.0  750.0  750.0
+node 191 coords 3  8000.0  750.0  250.0
+node 192 coords 3  0.0  250.0  750.0
+node 193 coords 3  0.0  250.0  250.0
+node 194 coords 3  0.0  750.0  250.0
+node 195 coords 3  0.0  750.0  750.0
+node 196 coords 3  1456.0  500.0  500.0
+node 197 coords 3  6552.0  500.0  500.0
+node 198 coords 3  6916.0  500.0  500.0
+node 199 coords 3  2184.0  500.0  500.0
+node 200 coords 3  2548.0  500.0  500.0
+node 201 coords 3  2912.0  500.0  500.0
+node 202 coords 3  1820.0  500.0  500.0
+node 203 coords 3  7640.0  750.0  250.0
+node 204 coords 3  7640.0  750.0  750.0
+node 205 coords 3  7280.0  500.0  500.0
+node 206 coords 3  7640.0  250.0  250.0
+node 207 coords 3  5460.0  500.0  500.0
+node 208 coords 3  5096.0  500.0  500.0
+node 209 coords 3  6188.0  500.0  500.0
+node 210 coords 3  5824.0  500.0  500.0
+node 211 coords 3  364.0  750.0  250.0
+node 212 coords 3  364.0  750.0  750.0
+node 213 coords 3  364.0  250.0  250.0
+node 214 coords 3  1092.0  500.0  500.0
+node 215 coords 3  728.0  500.0  500.0
+node 216 coords 3  364.0  250.0  750.0
+node 217 coords 3  4549.99999989  250.000000543  249.9999993
+node 218 coords 3  4549.99999989  750.000000543  249.9999993
+node 219 coords 3  4549.99999989  750.000000543  749.9999993
+node 220 coords 3  4368.0  500.0  500.0
+node 221 coords 3  4549.99999989  250.000000543  749.9999993
+node 222 coords 3  4913.99999989  250.000000543  749.9999993
+node 223 coords 3  4913.99999989  750.000000543  749.9999993
+node 224 coords 3  3276.0  500.0  500.0
+node 225 coords 3  3640.0  500.0  500.0
+node 226 coords 3  4004.0  500.0  500.0
+node 227 coords 3  4913.99999989  750.000000543  249.9999993
+node 228 coords 3  4913.99999989  250.000000543  249.9999993
+#
+# Element Records
+#
+QTRSpace 1 nodes 10 40 19 20 10 168 66 171 196 106 107
+QTRSpace 2 nodes 10 10 31 40 30 150 128 196 149 79 129
+QTRSpace 3 nodes 10 38 17 47 18 163 197 140 166 62 198
+QTRSpace 4 nodes 10 32 41 12 11 130 200 165 152 199 56
+QTRSpace 5 nodes 10 12 32 42 41 165 143 201 200 130 92
+QTRSpace 6 nodes 10 42 21 22 12 172 68 185 201 110 123
+QTRSpace 7 nodes 10 10 31 11 40 150 151 55 196 128 202
+QTRSpace 8 nodes 10 11 12 21 41 56 110 109 199 200 173
+QTRSpace 9 nodes 10 20 41 40 11 170 91 171 108 199 202
+QTRSpace 10 nodes 10 20 41 11 21 170 199 108 67 173 109
+QTRSpace 11 nodes 10 32 11 31 41 152 151 80 130 199 131
+QTRSpace 12 nodes 10 11 10 40 20 55 196 202 108 107 171
+QTRSpace 13 nodes 10 38 17 37 47 163 162 86 140 197 141
+QTRSpace 14 nodes 10 38 18 48 49 166 205 145 203 204 206
+QTRSpace 15 nodes 10 46 15 36 45 207 159 139 96 208 137
+QTRSpace 16 nodes 10 47 16 37 46 209 161 141 97 210 138
+QTRSpace 17 nodes 10 18 4 49 2 122 189 204 63 64 190
+QTRSpace 18 nodes 10 18 17 47 27 62 197 198 121 120 183
+QTRSpace 19 nodes 10 38 18 47 48 166 198 140 145 205 98
+QTRSpace 20 nodes 10 12 23 22 42 111 69 123 201 175 185
+QTRSpace 21 nodes 10 26 47 17 27 180 197 119 73 183 120
+QTRSpace 22 nodes 10 50 29 6 9 211 146 195 212 147 53
+QTRSpace 23 nodes 10 27 48 47 18 182 98 183 121 205 198
+QTRSpace 24 nodes 10 8 7 50 39 103 193 192 167 89 213
+QTRSpace 25 nodes 10 40 9 30 39 214 148 129 90 215 126
+QTRSpace 26 nodes 10 42 21 12 41 172 110 201 92 173 200
+QTRSpace 27 nodes 10 50 9 39 29 212 215 213 211 147 127
+QTRSpace 28 nodes 10 29 7 39 50 125 89 127 211 193 213
+QTRSpace 29 nodes 10 31 11 40 41 151 202 128 131 199 91
+QTRSpace 30 nodes 10 47 16 17 37 209 61 197 141 161 162
+QTRSpace 31 nodes 10 40 9 10 30 214 54 196 129 148 149
+QTRSpace 32 nodes 10 2 38 1 49 164 87 100 190 203 191
+QTRSpace 33 nodes 10 2 38 49 18 164 203 190 63 166 204
+QTRSpace 34 nodes 10 48 49 3 38 206 188 99 145 203 142
+QTRSpace 35 nodes 10 38 49 3 1 203 188 142 87 191 88
+QTRSpace 36 nodes 10 49 4 48 3 189 184 206 188 102 99
+QTRSpace 37 nodes 10 28 48 18 4 187 205 124 75 184 122
+QTRSpace 38 nodes 10 49 18 48 4 204 205 206 189 122 184
+QTRSpace 39 nodes 10 7 50 29 5 193 211 125 76 194 77
+QTRSpace 40 nodes 10 50 6 29 5 195 146 211 194 101 77
+QTRSpace 41 nodes 10 50 9 6 19 212 53 195 216 105 104
+QTRSpace 42 nodes 10 50 19 39 9 216 169 213 212 105 215
+QTRSpace 43 nodes 10 50 19 6 8 216 104 195 192 65 52
+QTRSpace 44 nodes 10 40 9 19 10 214 105 168 196 54 106
+QTRSpace 45 nodes 10 51 44 14 34 217 220 219 218 144 156
+QTRSpace 46 nodes 10 51 24 14 44 221 114 219 217 186 220
+QTRSpace 47 nodes 10 25 15 51 24 116 223 222 71 115 221
+QTRSpace 48 nodes 10 43 12 13 32 224 57 225 133 165 153
+QTRSpace 49 nodes 10 43 12 42 23 224 201 93 174 111 175
+QTRSpace 50 nodes 10 43 12 23 13 224 111 174 225 57 112
+QTRSpace 51 nodes 10 43 12 32 42 224 165 133 93 201 143
+QTRSpace 52 nodes 10 34 13 44 14 155 226 144 156 58 220
+QTRSpace 53 nodes 10 14 24 51 15 114 221 219 59 115 223
+QTRSpace 54 nodes 10 23 24 44 14 70 186 176 113 114 220
+QTRSpace 55 nodes 10 33 32 43 13 81 133 132 154 153 225
+QTRSpace 56 nodes 10 34 33 43 13 82 132 134 155 154 225
+QTRSpace 57 nodes 10 35 14 51 15 157 219 227 158 59 223
+QTRSpace 58 nodes 10 25 45 51 15 177 228 222 116 208 223
+QTRSpace 59 nodes 10 44 43 23 13 94 174 176 226 225 112
+QTRSpace 60 nodes 10 35 34 51 14 83 218 227 157 156 219
+QTRSpace 61 nodes 10 46 15 16 36 207 60 210 139 159 160
+QTRSpace 62 nodes 10 36 35 45 15 84 135 137 159 158 208
+QTRSpace 63 nodes 10 37 36 46 16 85 139 138 161 160 210
+QTRSpace 64 nodes 10 25 26 46 16 72 181 179 117 118 210
+QTRSpace 65 nodes 10 47 16 26 17 209 118 180 197 61 119
+QTRSpace 66 nodes 10 47 16 46 26 209 210 97 180 118 181
+QTRSpace 67 nodes 10 27 28 48 18 74 187 182 121 124 205
+QTRSpace 68 nodes 10 35 34 45 51 83 136 135 227 218 228
+QTRSpace 69 nodes 10 13 14 23 44 58 113 112 226 220 176
+QTRSpace 70 nodes 10 44 25 51 24 178 222 217 186 71 221
+QTRSpace 71 nodes 10 44 45 51 25 95 228 217 178 177 222
+QTRSpace 72 nodes 10 46 15 25 16 207 116 179 210 60 117
+QTRSpace 73 nodes 10 46 15 45 25 207 208 96 179 116 177
+QTRSpace 74 nodes 10 50 8 39 19 192 167 213 216 65 169
+QTRSpace 75 nodes 10 35 51 45 15 227 228 135 158 223 208
+QTRSpace 76 nodes 10 34 44 13 43 144 226 155 134 94 225
+QTRSpace 77 nodes 10 51 44 34 45 217 144 218 228 95 136
+QTRSpace 78 nodes 10 9 29 30 39 147 78 148 215 127 126
+QTRSpace 79 nodes 10 40 9 39 19 214 215 90 168 105 169
+#
+#
+# *******************************************************************
+# Cross Section Record
+#
+SimpleCS 1  material 1  set 1
+#
+#
+# *******************************************************************
+# Material Type Record
+#
+# unit density: t/mm^3
+# unit Youngs Modulus: MPa = N/mm2
+# unit Thermal Expansion Coefficient: 1/K
+IsoLE 1  d 7.900000000000001e-09  E 210000.0  n 0.3  talpha 1.2e-05
+#
+#
+# *******************************************************************
+# Boundary Condition Record
+#
+# FreeCAD displacement constraints
+#
+# FreeCAD fixed constraints
+BoundaryCondition 1  loadTimeFunction 1  dofs 3 1 2 3  values 3 0 0 0  set 2
+#
+#
+# *******************************************************************
+# Nodal Load Record
+#
+# node load on shape: Box:Vertex5
+# node load on shape: Box:Vertex6
+# node load on shape: Box:Vertex7
+# node load on shape: Box:Vertex8
+NodalLoad 2  loadTimeFunction 1  dofs 3 1 2 3  components 3 0.0 0.0 -2250000.0  set 3
+#
+#
+# *******************************************************************
+# Time Function Record
+#
+ConstantFunction 1  f(t) 1.0
+#
+#
+# *******************************************************************
+# Set Record
+#
+Set 1  elementranges {(1 79)}
+#
+Set 2  nodes 13  5 6 7 8 50 52 76 101 103 192 193 194 195
+Set 3  nodes 4  1 2 3 4
+#
+#
+# *******************************************************************
+# End of Input File
+#
