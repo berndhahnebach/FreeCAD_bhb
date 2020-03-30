@@ -538,7 +538,20 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
             f.write("# {}\n".format(67 * "*"))
             f.write("# Set Record\n")
             f.write("#\n")
-        f.write("Set 1 elementranges {(1 5)}\n")
+
+        # cross section and mataerial set, set 1 is used
+        # on mesh writing the elements are renumbered starting with 1
+        # means the ele_count == max ele number
+        ele_start = 1
+        ele_end = self.ele_count
+        line_cs_start = "Set {0}".format(self.cs_set_number)
+        line_cs_range = "elementranges {" + "({0} {1})".format(ele_start, ele_end) + "}"
+        f.write(line_cs_start + "  " + line_cs_range + "\n")
+
+        # separator line
+        if self.write_comments is True:
+            f.write("#\n")
+
         f.write("Set 2 nodes 2 1 2\n")
         f.write("Set 3 nodes 2 7 8\n")
 
