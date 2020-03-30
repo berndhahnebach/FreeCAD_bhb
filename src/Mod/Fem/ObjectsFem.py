@@ -799,6 +799,17 @@ def makeSolverElmer(
     return obj
 
 
+def makeSolverOofem(
+    doc,
+    name="SolverOOFEM"
+):
+    '''makeSolverOofem(document, [name]):
+    makes a OOFEM solver object'''
+    import femsolver.oofem.solver
+    obj = femsolver.oofem.solver.create(doc, name)
+    return obj
+
+
 def makeSolverZ88(
     doc,
     name="SolverZ88"

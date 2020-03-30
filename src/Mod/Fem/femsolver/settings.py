@@ -34,6 +34,7 @@ are supported:
 
     - Calculix
     - ElmerSolver
+    - OOFEM
     - Z88
 
 To query settings about those solver the solver name must be given exactly in
@@ -224,6 +225,11 @@ _SOLVER_PARAM = {
         param_path=_PARAM_PATH + "Elmer",
         use_default="UseStandardGridLocation",
         custom_path="gridBinaryPath"),
+    "oofem": _SolverDlg(
+        default="oofem",
+        param_path=_PARAM_PATH + "oofem",
+        use_default="UseStandardOofemLocation",
+        custom_path="OofemBinaryPath"),
     "Z88": _SolverDlg(
         default="z88r",
         param_path=_PARAM_PATH + "Z88",
