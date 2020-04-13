@@ -60,6 +60,8 @@ def setup_cantileverbase(doc=None, solvertype="ccxtools"):
     elif solvertype == "elmer":
         solver_obj = ObjectsFem.makeSolverElmer(doc, "SolverElmer")
         ObjectsFem.makeEquationElasticity(doc, solver_obj)
+    elif solvertype == "opensees":
+        solver_obj = ObjectsFem.makeSolverOpenSees(doc, "SolverOpenSees")
     elif solvertype == "z88":
         solver_obj = ObjectsFem.makeSolverZ88(doc, "SolverZ88")
     else:
