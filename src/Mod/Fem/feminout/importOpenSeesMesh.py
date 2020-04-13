@@ -1,5 +1,5 @@
 # ***************************************************************************
-# *   Copyright (c) 2020 Raeyat Roknabadi Ebrahim               *
+# *   Copyright (c) 2020 Raeyat Roknabadi Ebrahim                           *
 # *                                                                         *
 # *   This file is part of the FreeCAD CAx development system.              *
 # *                                                                         *
@@ -29,15 +29,20 @@ __url__ = "http://www.freecadweb.org"
 #  \ingroup FEM
 #  \brief FreeCAD OpenSees Mesh reader and writer for FEM workbench
 
-import os
-import FreeCAD
+# import os
+
+# import FreeCAD
 from FreeCAD import Console
+
+from femmesh import meshtools
 
 # ************************************************************************************************
 # ********* generic FreeCAD import and export methods ********************************************
 # names are fix given from FreeCAD, these methods are called from FreeCAD
 # they are set in FEM modules Init.py
 
+# TODO test if we could open and the if statement omit as well
+# because we only implement a writer
 if open.__module__ == "__builtin__":
     # because we'll redefine open below (Python2)
     pyopen = open
@@ -46,62 +51,28 @@ elif open.__module__ == "io":
     pyopen = open
 
 
-def open(
+def export(
+    objectslist,
     filename
 ):
-    """called when freecad opens a file
-    a FEM mesh object is created in a new document"""
-
-    docname = os.path.splitext(os.path.basename(filename))[0]
-    return insert(filename, docname)
-
-
-def insert(
-    filename,
-    docname
-):
-    """called when freecad wants to import a file
-    a FEM mesh object is created in a existing document"""
-
-    try:
-        doc = FreeCAD.getDocument(docname)
-    except NameError:
-        doc = FreeCAD.newDocument(docname)
-    FreeCAD.ActiveDocument = doc
-
-    import_opensees_mesh(filename, docname)
-    return doc
+    "called when freecad exports a file"
+    if len(objectslist) != 1:
+        Console.PrintError("This exporter can only export one object.\n")
+        return
+    obj = objectslist[0]
+    if not obj.isDerivedFrom("Fem::FemMeshObject"):
+        Console.PrintError("No FEM mesh object selected.\n")
+        return
+    fem_mesh = obj.FemMesh
+    femnodes_mesh = fem_mesh.Nodes
+    femelement_table = meshtools.get_femelement_table(fem_mesh)
+    f = pyopen(filename, "w")
+    write_opensees_mesh_to_file(femnodes_mesh, femelement_table, None, f)
+    f.close()
 
 
-
-def import_opensees_mesh(
-    filename,
-    analysis=None,
-    docname=None
-):
-    """read a FEM mesh from a OpenSees mesh file and
-    insert a FreeCAD FEM Mesh object in the ActiveDocument
-    """
-
-    try:
-        doc = FreeCAD.getDocument(docname)
-    except NameError:
-        try:
-            doc = FreeCAD.ActiveDocument
-        except NameError:
-            doc = FreeCAD.newDocument()
-    FreeCAD.ActiveDocument = doc
-
-    mesh_name = os.path.basename(os.path.splitext(filename)[0])
-
-    femmesh = read(filename)
-    if femmesh:
-        mesh_object = doc.addObject("Fem::FemMeshObject", mesh_name)
-        mesh_object.FemMesh = femmesh
-
-    return mesh_object
-
-
+# ************************************************************************************************
+# ********* module specific methods **************************************************************
 # ********* writer *******************************************************************************
 def write(
     fem_mesh,
@@ -114,11 +85,10 @@ def write(
         Console.PrintError("Not a FemMesh was given as parameter.\n")
         return
     femnodes_mesh = fem_mesh.Nodes
-    import femmesh.meshtools as FemMeshTools
-    femelement_table = FemMeshTools.get_femelement_table(fem_mesh)
+    femelement_table = meshtools.get_femelement_table(fem_mesh)
     # opensees_element_type = get_opensees_element_type(fem_mesh, femelement_table)
     f = pyopen(filename, "w")
-    write_opensees_mesh_to_file(femnodes_mesh, femelement_table, opensees_element_type, f)
+    write_opensees_mesh_to_file(femnodes_mesh, femelement_table, None, f)
     f.close()
 
 
@@ -128,8 +98,8 @@ def write_opensees_mesh_to_file(
     opensees_element_type,
     f
 ):
-    node_dimension = 3  # 2 for 2D not supported
-    node_dof = 3
+    # node_dimension = 3  # 2 for 2D not supported
+    # node_dof = 3
     # if (
     #     opensees_element_type == 4
     #     or opensees_element_type == 17
@@ -146,11 +116,11 @@ def write_opensees_mesh_to_file(
     # else:
     #     Console.PrintError("Error: wrong opensees_element_type.\n")
     #     return
-    node_count = len(femnodes_mesh)
-    element_count = len(femelement_table)
-    dofs = node_dof * node_count
-    unknown_flag = 0
-    written_by = "written by FreeCAD"
+    # node_count = len(femnodes_mesh)
+    # element_count = len(femelement_table)
+    # dofs = node_dof * node_count
+    # unknown_flag = 0
+    # written_by = "written by FreeCAD"
 
     # nodes
     for node in femnodes_mesh:
@@ -227,5 +197,4 @@ def write_opensees_mesh_to_file(
     #         Console.PrintError(
     #             "Writing of Z88 elementtype {0} not supported.\n".format(opensees_element_type)
     #         )
-    #         # TODO support schale12 (made from prism15) and schale16 (made from hexa20)
     #         return
