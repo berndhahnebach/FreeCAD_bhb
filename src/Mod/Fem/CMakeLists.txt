@@ -242,7 +242,14 @@ SET(FemSolverFenics_SRCS
 
 SET(FemSolverOpenSees_SRCS
     femsolver/opensees/__init__.py
+    femsolver/opensees/bcs.py
+    femsolver/opensees/elements.py
+    femsolver/opensees/heading.py
+    femsolver/opensees/loads.py
+    femsolver/opensees/materials.py
+    femsolver/opensees/nodes.py
     femsolver/opensees/solver.py
+    femsolver/opensees/steps.py
     femsolver/opensees/tasks.py
     femsolver/opensees/writer.py
 )
