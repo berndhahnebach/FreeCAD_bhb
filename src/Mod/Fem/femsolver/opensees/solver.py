@@ -33,7 +33,7 @@ import os
 
 import FreeCAD
 
-# from . import tasks
+from . import tasks
 from .. import run
 from .. import solverbase
 from femtools import femutils
@@ -76,7 +76,7 @@ class Proxy(solverbase.Proxy):
         return True
 
     def edit(self, directory):
-        pattern = os.path.join(directory, "*.in")
+        pattern = os.path.join(directory, "*.tcl")
         print(pattern)
         print("Editing of OpenSees input files inside FreeCAD not supported ATM.")
         f = glob.glob(pattern)[0]

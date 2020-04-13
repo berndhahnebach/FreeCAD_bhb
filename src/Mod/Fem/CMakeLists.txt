@@ -241,6 +241,8 @@ SET(FemSolverFenics_SRCS
 
 SET(FemSolverOpenSees_SRCS
     femsolver/opensees/__init__.py
+    femsolver/opensees/solver.py
+    femsolver/opensees/tasks.py
     femsolver/opensees/writer.py
 )
 
