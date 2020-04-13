@@ -57,20 +57,20 @@ class Prepare(run.Prepare):
     def run(self):
         global _inputFileName
         self.pushStatus("Preparing input files...\n")
-        w = writer.FemInputWriterOpenSees(
+        with writer.FemInputWriterOpenSees(
             self.analysis,
             self.solver,
-            None, # membertools.get_mesh_to_solve(self.analysis)[0],
+            membertools.get_mesh_to_solve(self.analysis)[0],
             membertools.AnalysisMember(self.analysis),
             self.directory
-        )
-        path = w.write_opensees_input_file()
-        # report to user if task succeeded
-        if path is not None:
-            self.pushStatus("Write completed!")
-        else:
-            self.pushStatus("Writing OpenSees input files failed!")
-        _inputFileName = os.path.splitext(os.path.basename(path))[0]
+        ) as w:
+            path = w.write_opensees_input_file()
+            # report to user if task succeeded
+            if path is not None:
+                self.pushStatus("Write completed!")
+            else:
+                self.pushStatus("Writing OpenSees input files failed!")
+            _inputFileName = os.path.splitext(os.path.basename(path))[0]
 
 
 class Solve(run.Solve):
