@@ -1429,125 +1429,162 @@ def build_mesh_faces_of_volume_elements(
         FreeCAD.Console.PrintLog("VolElement: {}\n".format(veID))
         vol_node_ct = len(femelement_table[veID])
         face_node_indexs = sorted(face_nodenumber_table[veID])
+        face_node_ct = len(face_node_indexs)
         node_numbers = ()
         if vol_node_ct == 10:
-            FreeCAD.Console.PrintLog("  --> tetra10 --> tria6 face\n")
-            # node order of face in tetra10 volume element
-            if face_node_indexs == [1, 2, 3, 5, 6, 7]:
-                # node order of a tria6 face of tetra10
-                node_numbers = (1, 2, 3, 5, 6, 7)
-            elif face_node_indexs == [1, 2, 4, 5, 8, 9]:
-                node_numbers = (1, 4, 2, 8, 9, 5)
-            elif face_node_indexs == [1, 3, 4, 7, 8, 10]:
-                node_numbers = (1, 3, 4, 7, 10, 8)
-            elif face_node_indexs == [2, 3, 4, 6, 9, 10]:
-                node_numbers = (2, 4, 3, 9, 10, 6)
+            if face_node_ct == 6:
+                FreeCAD.Console.PrintLog("  --> tetra10 --> tria6 face\n")
+                # node order of face in tetra10 volume element
+                if face_node_indexs == [1, 2, 3, 5, 6, 7]:
+                    # node order of a tria6 face of tetra10
+                    node_numbers = (1, 2, 3, 5, 6, 7)
+                elif face_node_indexs == [1, 2, 4, 5, 8, 9]:
+                    node_numbers = (1, 4, 2, 8, 9, 5)
+                elif face_node_indexs == [1, 3, 4, 7, 8, 10]:
+                    node_numbers = (1, 3, 4, 7, 10, 8)
+                elif face_node_indexs == [2, 3, 4, 6, 9, 10]:
+                    node_numbers = (2, 4, 3, 9, 10, 6)
+                else:
+                    FreeCAD.Console.PrintError(
+                        "Error in build_mesh_faces_of_volume_elements(): "
+                        "tetra10: face not found! {}\n"
+                        .format(face_node_indexs)
+                    )
             else:
                 FreeCAD.Console.PrintError(
-                    "Error in build_mesh_faces_of_volume_elements(): "
-                    "tetra10: face not found! {}\n"
+                    "Tetra10 volume element, but the face does not have 6 nodes: {}\n"
                     .format(face_node_indexs)
                 )
         elif vol_node_ct == 4:
-            FreeCAD.Console.PrintLog("  --> tetra4 --> tria3 face\n")
-            # node order of face in tetra4 volume element
-            if face_node_indexs == [1, 2, 3]:
-                # node order of a tria3 face of tetra4
-                node_numbers = (1, 2, 3)
-            elif face_node_indexs == [1, 2, 4]:
-                node_numbers = (1, 4, 2, 8)
-            elif face_node_indexs == [1, 3, 4]:
-                node_numbers = (1, 3, 4)
-            elif face_node_indexs == [2, 3, 4]:
-                node_numbers = (2, 4, 3)
+            if face_node_ct == 3:
+                FreeCAD.Console.PrintLog("  --> tetra4 --> tria3 face\n")
+                # node order of face in tetra4 volume element
+                if face_node_indexs == [1, 2, 3]:
+                    # node order of a tria3 face of tetra4
+                    node_numbers = (1, 2, 3)
+                elif face_node_indexs == [1, 2, 4]:
+                    node_numbers = (1, 4, 2, 8)
+                elif face_node_indexs == [1, 3, 4]:
+                    node_numbers = (1, 3, 4)
+                elif face_node_indexs == [2, 3, 4]:
+                    node_numbers = (2, 4, 3)
+                else:
+                    FreeCAD.Console.PrintError(
+                        "Error in build_mesh_faces_of_volume_elements(): "
+                        "tetra4: face not found! {}\n"
+                        .format(face_node_indexs)
+                    )
             else:
                 FreeCAD.Console.PrintError(
-                    "Error in build_mesh_faces_of_volume_elements(): "
-                    "tetra4: face not found! {}\n"
+                    "Tetra4 volume element, but the face does not have 3 nodes: {}\n"
                     .format(face_node_indexs)
                 )
         elif vol_node_ct == 20:
-            FreeCAD.Console.PrintLog("  --> hexa20 --> quad8 face\n")
-            # node order of face in hexa20 volume element
-            if face_node_indexs == [1, 2, 3, 4, 9, 10, 11, 12]:
-                # node order of a quad8 face of hexa20
-                node_numbers = (1, 2, 3, 4, 9, 10, 11, 12)
-            elif face_node_indexs == [5, 6, 7, 8, 13, 14, 15, 16]:
-                node_numbers = (5, 8, 7, 6, 16, 15, 14, 13)
-            elif face_node_indexs == [1, 2, 5, 6, 9, 13, 17, 18]:
-                node_numbers = (1, 5, 6, 2, 17, 13, 18, 9)
-            elif face_node_indexs == [3, 4, 7, 8, 11, 15, 19, 20]:
-                node_numbers = (3, 7, 8, 4, 19, 15, 20, 11)
-            elif face_node_indexs == [1, 4, 5, 8, 12, 16, 17, 20]:
-                node_numbers = (1, 4, 8, 5, 12, 20, 16, 17)
-            elif face_node_indexs == [2, 3, 6, 7, 10, 14, 18, 19]:
-                node_numbers = (2, 6, 7, 3, 18, 14, 19, 10)
+            if face_node_ct == 8:
+                FreeCAD.Console.PrintLog("  --> hexa20 --> quad8 face\n")
+                # node order of face in hexa20 volume element
+                if face_node_indexs == [1, 2, 3, 4, 9, 10, 11, 12]:
+                    # node order of a quad8 face of hexa20
+                    node_numbers = (1, 2, 3, 4, 9, 10, 11, 12)
+                elif face_node_indexs == [5, 6, 7, 8, 13, 14, 15, 16]:
+                    node_numbers = (5, 8, 7, 6, 16, 15, 14, 13)
+                elif face_node_indexs == [1, 2, 5, 6, 9, 13, 17, 18]:
+                    node_numbers = (1, 5, 6, 2, 17, 13, 18, 9)
+                elif face_node_indexs == [3, 4, 7, 8, 11, 15, 19, 20]:
+                    node_numbers = (3, 7, 8, 4, 19, 15, 20, 11)
+                elif face_node_indexs == [1, 4, 5, 8, 12, 16, 17, 20]:
+                    node_numbers = (1, 4, 8, 5, 12, 20, 16, 17)
+                elif face_node_indexs == [2, 3, 6, 7, 10, 14, 18, 19]:
+                    node_numbers = (2, 6, 7, 3, 18, 14, 19, 10)
+                else:
+                    FreeCAD.Console.PrintError(
+                        "Error in build_mesh_faces_of_volume_elements(): "
+                        "hexa20: face not found! {}\n"
+                        .format(face_node_indexs)
+                    )
             else:
                 FreeCAD.Console.PrintError(
-                    "Error in build_mesh_faces_of_volume_elements(): "
-                    "hexa20: face not found! {}\n"
+                    "Hexa20 volume element, but the face does not have 8 nodes: {}\n"
                     .format(face_node_indexs)
                 )
         elif vol_node_ct == 8:
-            FreeCAD.Console.PrintLog("  --> hexa8 --> quad4 face\n")
-            # node order of face in hexa8 volume element
-            if face_node_indexs == [1, 2, 3, 4]:
-                # node order of a quad8 face of hexa8
-                node_numbers = (1, 2, 3, 4)
-            elif face_node_indexs == [5, 6, 7, 8]:
-                node_numbers = (5, 8, 7, 6)
-            elif face_node_indexs == [1, 2, 5, 6]:
-                node_numbers = (1, 5, 6, 2)
-            elif face_node_indexs == [3, 4, 7, 8]:
-                node_numbers = (3, 7, 8, 4)
-            elif face_node_indexs == [1, 4, 5, 8]:
-                node_numbers = (1, 4, 8, 5)
-            elif face_node_indexs == [2, 3, 6, 7]:
-                node_numbers = (2, 6, 7, 3)
+            if face_node_ct == 4:
+                FreeCAD.Console.PrintLog("  --> hexa8 --> quad4 face\n")
+                # node order of face in hexa8 volume element
+                if face_node_indexs == [1, 2, 3, 4]:
+                    # node order of a quad8 face of hexa8
+                    node_numbers = (1, 2, 3, 4)
+                elif face_node_indexs == [5, 6, 7, 8]:
+                    node_numbers = (5, 8, 7, 6)
+                elif face_node_indexs == [1, 2, 5, 6]:
+                    node_numbers = (1, 5, 6, 2)
+                elif face_node_indexs == [3, 4, 7, 8]:
+                    node_numbers = (3, 7, 8, 4)
+                elif face_node_indexs == [1, 4, 5, 8]:
+                    node_numbers = (1, 4, 8, 5)
+                elif face_node_indexs == [2, 3, 6, 7]:
+                    node_numbers = (2, 6, 7, 3)
+                else:
+                    FreeCAD.Console.PrintError(
+                        "Error in build_mesh_faces_of_volume_elements(): "
+                        "hexa8: face not found! {}\n"
+                        .format(face_node_indexs)
+                    )
             else:
                 FreeCAD.Console.PrintError(
-                    "Error in build_mesh_faces_of_volume_elements(): "
-                    "hexa8: face not found! {}\n"
+                    "Hexa8 volume element, but the face does not have 4 nodes: {}\n"
                     .format(face_node_indexs)
                 )
         elif vol_node_ct == 15:
-            FreeCAD.Console.PrintLog("  --> penta15 --> tria6 and quad8 faces\n")
-            # node order of face in penta15 volume element
-            if face_node_indexs == [1, 2, 3, 7, 8, 9]:
-                # node order of a tria6 face of penta15
-                node_numbers = (1, 2, 3, 7, 8, 9)
-            elif face_node_indexs == [4, 5, 6, 10, 11, 12]:
-                node_numbers = (4, 6, 5, 12, 11, 10)  # tria6
-            elif face_node_indexs == [1, 2, 4, 5, 7, 10, 13, 14]:
-                node_numbers = (1, 4, 5, 2, 13, 10, 14, 7)  # quad8
-            elif face_node_indexs == [1, 3, 4, 6, 9, 12, 13, 15]:
-                node_numbers = (1, 3, 6, 4, 9, 15, 12, 13)  # quad8
-            elif face_node_indexs == [2, 3, 5, 6, 8, 11, 14, 15]:
-                node_numbers = (2, 5, 6, 3, 14, 11, 15, 8)  # quad8
+            if face_node_ct == 6 or face_node_ct == 8:
+                FreeCAD.Console.PrintLog("  --> penta15 --> tria6 and quad8 faces\n")
+                # node order of face in penta15 volume element
+                if face_node_indexs == [1, 2, 3, 7, 8, 9]:
+                    # node order of a tria6 face of penta15
+                    node_numbers = (1, 2, 3, 7, 8, 9)
+                elif face_node_indexs == [4, 5, 6, 10, 11, 12]:
+                    node_numbers = (4, 6, 5, 12, 11, 10)  # tria6
+                elif face_node_indexs == [1, 2, 4, 5, 7, 10, 13, 14]:
+                    node_numbers = (1, 4, 5, 2, 13, 10, 14, 7)  # quad8
+                elif face_node_indexs == [1, 3, 4, 6, 9, 12, 13, 15]:
+                    node_numbers = (1, 3, 6, 4, 9, 15, 12, 13)  # quad8
+                elif face_node_indexs == [2, 3, 5, 6, 8, 11, 14, 15]:
+                    node_numbers = (2, 5, 6, 3, 14, 11, 15, 8)  # quad8
+                else:
+                    FreeCAD.Console.PrintError(
+                        "Error in build_mesh_faces_of_volume_elements(): "
+                        "penta15: face not found! {}\n"
+                        .format(face_node_indexs)
+                    )
             else:
                 FreeCAD.Console.PrintError(
-                    "Error in build_mesh_faces_of_volume_elements(): "
-                    "penta15: face not found! {}\n"
+                    "Penta volume element, but the face does neither have 6 nor 8 nodes: {}\n"
                     .format(face_node_indexs)
                 )
         elif vol_node_ct == 6:
-            FreeCAD.Console.PrintLog("  --> penta6 --> tria3 and quad4 faces\n")
-            # node order of face in penta6 volume element
-            if face_node_indexs == [1, 2, 3]:
-                # node order of a tria3 face of penta6
-                node_numbers = (1, 2, 3)
-            elif face_node_indexs == [4, 5, 6]:
-                node_numbers = (4, 6, 5)  # tria3
-            elif face_node_indexs == [1, 2, 4, 5]:
-                node_numbers = (1, 4, 5, 2)  # quad4
-            elif face_node_indexs == [1, 3, 4, 6]:
-                node_numbers = (1, 3, 6, 4)  # quad4
-            elif face_node_indexs == [2, 3, 5, 6]:
-                node_numbers = (2, 5, 6, 3)  # quad4
+            if face_node_ct == 3 or face_node_ct == 4:
+                FreeCAD.Console.PrintLog("  --> penta6 --> tria3 and quad4 faces\n")
+                # node order of face in penta6 volume element
+                if face_node_indexs == [1, 2, 3]:
+                    # node order of a tria3 face of penta6
+                    node_numbers = (1, 2, 3)
+                elif face_node_indexs == [4, 5, 6]:
+                    node_numbers = (4, 6, 5)  # tria3
+                elif face_node_indexs == [1, 2, 4, 5]:
+                    node_numbers = (1, 4, 5, 2)  # quad4
+                elif face_node_indexs == [1, 3, 4, 6]:
+                    node_numbers = (1, 3, 6, 4)  # quad4
+                elif face_node_indexs == [2, 3, 5, 6]:
+                    node_numbers = (2, 5, 6, 3)  # quad4
+                else:
+                    FreeCAD.Console.PrintError(
+                        "Error in build_mesh_faces_of_volume_elements(): "
+                        "penta6: face not found! {}\n"
+                        .format(face_node_indexs)
+                    )
             else:
                 FreeCAD.Console.PrintError(
-                    "Error in build_mesh_faces_of_volume_elements(): "
-                    "penta6: face not found! {}\n"
+                    "Penta volume element, but the face does neither have 3 nor 4 nodes: {}\n"
                     .format(face_node_indexs)
                 )
         else:
