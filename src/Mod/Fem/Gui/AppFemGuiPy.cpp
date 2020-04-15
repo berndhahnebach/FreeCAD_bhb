@@ -147,6 +147,21 @@ private:
             editor->setFont(font);
         }
 
+        if (ext == QLatin1String("tcl")) {
+            Gui::TextEditor* editor = new Gui::TextEditor();
+            editor->setWindowIcon(Gui::BitmapFactory().pixmap(":/icons/fem-solver-inp-editor.svg"));
+            Gui::EditorView* edit = new Gui::EditorView(editor, Gui::getMainWindow());
+            //editor->setSyntaxHighlighter(new FemGui::AbaqusHighlighter(editor));
+            edit->setDisplayName(Gui::EditorView::FileName);
+            edit->open(fileName);
+            edit->resize(400, 300);
+            Gui::getMainWindow()->addWindow(edit);
+
+            QFont font = editor->font();
+            font.setFamily(QString::fromLatin1("Arial"));
+            editor->setFont(font);
+        }
+
         return Py::None();
     }
 };
