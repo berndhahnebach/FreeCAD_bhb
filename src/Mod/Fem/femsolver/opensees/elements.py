@@ -50,22 +50,29 @@ class Elements(object):
 
         self.write_section('Elements')
         self.blank_line()
-        print(self.ccx_elsets)
+        # print(self.ccx_elsets)
 
         # print(f"self.beamsection_objects = {self.beamsection_objects}")
         # print(f"self.transform_objects = {self.transform_objects}")
         # print(f"self.material_objects = {self.material_objects}")
-
+        materials = {MAT["Object"].Name: MAT["Object"] for MAT in self.material_objects}
         for ccx_elset in self.ccx_elsets:
             if ccx_elset["ccx_elset"]:
                 if "beamsection_obj"in ccx_elset:  # beam mesh
                     e = 'element elasticBeamColumn'
                     beamsec_obj = ccx_elset["beamsection_obj"]
+                    mat_name = ccx_elset["mat_obj_name"]
+                    mat_obj = materials[mat_name]
+                    E = FreeCAD.Units.Quantity(mat_obj.Material["YoungsModulus"])
+                    E = E.getValueAs("kg/(mm*s^2)")
+                    E = E.Value
+                    # v = float(mat_obj.Material["PoissonRatio"])
+                    # p = FreeCAD.Units.Quantity(mat_obj.Material["Density"])
+                    # p = p.getValueAs("kg/mm^3")
                     A = beamsec_obj.Area
                     J = beamsec_obj.J
                     Izz = beamsec_obj.Izz
                     Iyy = beamsec_obj.Iyy
-                    E = 200000
                     G = 1000
                     normal = ccx_elset["beam_normal"]
                     # beamsec_obj = ccx_elset["beamsection_obj"]
