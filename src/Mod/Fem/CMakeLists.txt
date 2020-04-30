@@ -65,6 +65,7 @@ SET(FemExamples_SRCS
     femexamples/elmer_nonguitutorial01_eigenvalue_of_elastic_beam.py
     femexamples/equation_electrostatics_capacitance_two_balls.py
     femexamples/equation_electrostatics_electricforce_elmer_nongui6.py
+    femexamples/frame3D.py
     femexamples/frequency_beamsimple.py
     femexamples/manager.py
     femexamples/material_multiple_bendingbeam_fiveboxes.py
@@ -96,6 +97,7 @@ SET(FemExampleMeshes_SRCS
     femexamples/meshes/mesh_eigenvalue_of_elastic_beam_tetra10.py
     femexamples/meshes/mesh_electricforce_elmer_nongui6_tetra10.py
     femexamples/meshes/mesh_flexural_buckling.py
+    femexamples/meshes/mesh_frame3D_seg3.py
     femexamples/meshes/mesh_multibodybeam_tetra10.py
     femexamples/meshes/mesh_multibodybeam_tria6.py
     femexamples/meshes/mesh_platewithhole_tetra10.py
