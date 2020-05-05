@@ -1,5 +1,5 @@
 # ***************************************************************************
-# *   Copyright (c) 2020 Raeyat Roknabadi Ebrahim <ebe79442114@yahoo.com>              *
+# *   Copyright (c) 2020 Raeyat Roknabadi Ebrahim <ebe79442114@yahoo.com>   *
 # *                                                                         *
 # *   This file is part of the FreeCAD CAx development system.              *
 # *                                                                         *
@@ -26,12 +26,14 @@
 """
 from femexamples import frame3D
 frame3D.setup()
+
 """
 
 import FreeCAD
 from FreeCAD import Vector as vec
-import Draft
+
 import BOPTools.SplitFeatures
+import Draft
 
 import Fem
 import ObjectsFem
@@ -155,9 +157,10 @@ def setup(doc=None, solvertype="opensees"):
     if not control:
         FreeCAD.Console.PrintError("Error on creating elements.\n")
     femmesh_obj = analysis.addObject(
-        doc.addObject("Fem::FemMeshObject", mesh_name)
+        ObjectsFem.makeMeshGmsh(doc, name="Mesh")
     )[0]
     femmesh_obj.FemMesh = fem_mesh
+    femmesh_obj.Part = geom_obj
 
     doc.recompute()
     return doc
