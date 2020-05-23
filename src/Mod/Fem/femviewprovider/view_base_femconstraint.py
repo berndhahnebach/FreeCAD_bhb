@@ -39,6 +39,7 @@ class VPBaseFemConstraint(view_base_femobject.VPBaseFemObject):
     """Proxy View Provider for Pythons base constraint."""
 
     def attach(self, vobj):
+        self.obj = vobj.Object
         default = coin.SoGroup()
         vobj.addDisplayMode(default, "Default")
         self.Object = vobj.Object  # used on various places, claim childreens, get icon, etc.
