@@ -139,11 +139,13 @@ SET(FemMesh_SRCS
 
 SET(FemObjects_SRCS
     femobjects/__init__.py
+    femobjects/ConstraintGenericDefaults.py
     femobjects/base_fempythonobject.py
     femobjects/constant_vacuumpermittivity.py
     femobjects/constraint_bodyheatsource.py
     femobjects/constraint_centrif.py
     femobjects/constraint_electrostaticpotential.py
+    femobjects/constraint_generic.py
     femobjects/constraint_flowvelocity.py
     femobjects/constraint_initialflowvelocity.py
     femobjects/constraint_sectionprint.py
@@ -513,6 +515,7 @@ SET(FemGuiUtils_SRCS
     femguiutils/__init__.py
     femguiutils/migrate_gui.py
     femguiutils/selection_widgets.py
+    femguiutils/constraint_widgets.py
 )
 
 SET(FemGuiViewProvider_SRCS
@@ -523,6 +526,7 @@ SET(FemGuiViewProvider_SRCS
     femviewprovider/view_constraint_bodyheatsource.py
     femviewprovider/view_constraint_centrif.py
     femviewprovider/view_constraint_electrostaticpotential.py
+    femviewprovider/view_constraint_generic.py
     femviewprovider/view_constraint_flowvelocity.py
     femviewprovider/view_constraint_initialflowvelocity.py
     femviewprovider/view_constraint_sectionprint.py

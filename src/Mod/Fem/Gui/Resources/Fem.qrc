@@ -30,6 +30,8 @@
         <file>icons/FEM_ConstraintTemperature.svg</file>
         <file>icons/FEM_ConstraintTie.svg</file>
         <file>icons/FEM_ConstraintTransform.svg</file>
+        <file>icons/fem-add-body-source.svg</file>
+        <file>icons/fem-add-initial-value.svg</file>
 
         <!-- gui command icons: element geometries -->
         <file>icons/FEM_ElementFluid1D.svg</file>

@@ -45,6 +45,48 @@ import FreeCAD
 # What happens ATM? Error or the obj is moved to the other doc?
 
 
+# ********* generic constraints creation methods *************************************************
+def _makeConstraintBodySource(
+    doc,
+    bodySource,
+    name="Source"
+):
+    """makeConstraintBodySource(document, body source dict, [name]):
+    creates an body source such as heat source, gravity"""
+    if not (name) and bodySource and "Name" in bodySource:
+        name = "BodySource" + bodySource["Name"]
+    # App::DocumentObject can not add dynamic property
+    obj = doc.addObject("Fem::ConstraintPython", name)
+    from femobjects import constraint_generic
+    constraint_generic.ConstraintGeneric(obj)
+    obj.Settings = bodySource
+    obj.Category = "Source"
+    if FreeCAD.GuiUp:
+        from femviewprovider import view_constraint_generic
+        view_constraint_generic.VPConstraintGeneric(obj.ViewObject)
+    return obj
+
+
+def _makeConstraintInitialValue(
+    doc,
+    initialValue,
+    name="IntialValue"
+):
+    """makeConstraintInitialValue(document, initialvalue dict, [name]):
+    creates an initial value object to define such as initial temperature"""
+    if not (name) and initialValue and "Name" in initialValue:
+        name = initialValue["Name"] + "InitialValue"
+    obj = doc.addObject("Fem::ConstraintPython", name)
+    from femobjects import constraint_generic
+    constraint_generic.ConstraintGeneric(obj)
+    obj.Settings = initialValue
+    obj.Category = "InitialValue"
+    if FreeCAD.GuiUp:
+        from femviewprovider import view_constraint_generic
+        view_constraint_generic.VPConstraintGeneric(obj.ViewObject)
+    return obj
+
+
 # ********* analysis objects *********************************************************************
 def makeAnalysis(
     doc,
