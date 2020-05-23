@@ -115,6 +115,14 @@ def makeConstantVacuumPermittivity(
 
 
 # ********* constraint objects *******************************************************************
+def makeConstraintAcceleration(
+    doc,
+    name="ConstraintAcceleration"
+):
+    from femobjects.ConstraintGenericDefaults import _DefaultConstraintAcceleration
+    return _makeConstraintBodySource(doc, _DefaultConstraintAcceleration, name)
+
+
 def makeConstraintBearing(
     doc,
     name="ConstraintBearing"
@@ -268,6 +276,14 @@ def makeConstraintInitialFlowVelocity(
         from femviewprovider import view_constraint_initialflowvelocity
         view_constraint_initialflowvelocity.VPConstraintInitialFlowVelocity(obj.ViewObject)
     return obj
+
+
+def makeConstraintInitialPressure(
+    doc,
+    name="ConstraintInitialPressure"
+):
+    from femobjects.ConstraintGenericDefaults import _DefaultConstraintInitialPressure
+    return _makeConstraintInitialValue(doc, _DefaultConstraintInitialPressure, name)
 
 
 def makeConstraintInitialTemperature(

@@ -284,8 +284,10 @@ Gui::MenuItem* Workbench::setupMenuBar() const
     Gui::MenuItem* nosolver = new Gui::MenuItem;
     nosolver->setCommand("&Constraints without solver");
     *nosolver
+        << "FEM_ConstraintInitialPressure"
         << "FEM_ConstraintFluidBoundary"
         << "Separator"
+        << "FEM_ConstraintAcceleration"
         << "FEM_ConstraintBearing"
         << "FEM_ConstraintGear"
         << "FEM_ConstraintPulley";
