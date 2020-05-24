@@ -727,6 +727,9 @@ class GmshTools():
         boundaries = 0
         domains = 0
 
+        # forum topic for the group changes
+        # https://forum.freecadweb.org/viewtopic.php?t=23702
+
         import copy
         all_group_elements = copy.copy(self.group_elements)
         for k in self.constraint_objects:
