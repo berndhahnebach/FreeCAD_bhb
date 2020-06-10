@@ -66,7 +66,7 @@ jobs:
         env:
           - CC=clang-10
           - CXX=clang++-10
-          - CMAKE_ARGS="-DPYTHON_EXECUTABLE=/usr/bin/python3 -DBUILD_FEM_NETGEN=ON"
+          - CMAKE_ARGS="-DPYTHON_EXECUTABLE=/usr/bin/python3 -DBUILD_FEM_NETGEN=ON -DBUILD_GUI=OFF"
           - CACHE_NAME=JOB1
 
       - os: linux
@@ -86,7 +86,7 @@ jobs:
           - CXX=g++-10
           - CC_FOR_BUILD=gcc-10
           - CXX_FOR_BUILD=g++-10
-          - CMAKE_ARGS="-DCMAKE_CXX_COMPILER=/usr/bin/c++ -DCMAKE_C_COMPILER=/usr/bin/cc -DPYTHON_EXECUTABLE=/usr/bin/python3 -DBUILD_FEM_NETGEN=ON"
+          - CMAKE_ARGS="-DCMAKE_CXX_COMPILER=/usr/bin/c++ -DCMAKE_C_COMPILER=/usr/bin/cc -DPYTHON_EXECUTABLE=/usr/bin/python3 -DBUILD_FEM_NETGEN=ON -DBUILD_GUI=OFF"
           - CACHE_NAME=JOB2
 
             #      - os: osx
@@ -106,7 +106,7 @@ jobs:
       - os: windows
         language: cpp
         env:
-          - CMAKE_OPTS="-DBUILD_FEM_NETGEN=OFF -DFREECAD_RELEASE_PDB=OFF -DFREECAD_RELEASE_SEH=OFF"
+          - CMAKE_OPTS="-DBUILD_FEM_NETGEN=OFF -DFREECAD_RELEASE_PDB=OFF -DFREECAD_RELEASE_SEH=OFF -DBUILD_GUI=OFF"
           - GENERATOR="Visual Studio 15 2017 Win64"
           - PYTHON_MAJOR_VERSION=3
           - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
@@ -202,7 +202,7 @@ before_install:
        export DISPLAY=:99.0
        sh -e /etc/init.d/xvfb start
 
-       export INSTALLED_APP_PATH="/usr/local/bin/FreeCAD"
+       export INSTALLED_APP_PATH="/usr/local/bin/FreeCADCmd"
        export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/netgen/:$LD_LIRBARY_PATH
        ;;
 
@@ -330,7 +330,7 @@ script:
         if [ "${TRAVIS_OS_NAME}" == "linux" ]; then sudo timeout -k 175m 170m make -j2 install || true; fi
         sudo make -j2 install
         ccache -s
-        ${INSTALLED_APP_PATH} --console --run-test 0 || travis_terminate 1
+        # ${INSTALLED_APP_PATH} --console --run-test 0 || travis_terminate 1
         ${INSTALLED_APP_PATH} --log-file /tmp/FreeCAD_installed.log &
         sleep 10 && pkill FreeCAD
         cat /tmp/FreeCAD_installed.log
