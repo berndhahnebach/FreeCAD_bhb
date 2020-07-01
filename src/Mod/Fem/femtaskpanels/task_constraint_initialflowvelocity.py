@@ -106,8 +106,22 @@ class _TaskPanel(object):
         self._obj.VelocityXEnabled = \
             not self._paramWidget.velocityXBox.isChecked()
         if self._obj.VelocityXEnabled:
-            quantity = Units.Quantity(self._paramWidget.velocityXTxt.text())
-            self._obj.VelocityX = float(quantity.getValueAs(unit))
+            quantity = None
+            userinput = (self._paramWidget.velocityXTxt.text())
+            try:
+                quantity = Units.Quantity(self._paramWidget.velocityXTxt.text())
+            except:
+                print(userinput)
+            if quantity is not None and Units.Unit(quantity) == Units.Velocity:
+                # exception if no Unit is given ???
+                self._obj.VelocityX = float(quantity.getValueAs(unit))
+            else:
+                # see on file end
+                # user might have input a number without unit, m/s
+                # float(self._paramWidget.velocityXTxt.text())
+                print("Wrong input.")
+                print(userinput)
+                # handle no unit with elif, because it is valid input, but print information
         self._obj.VelocityYEnabled = \
             not self._paramWidget.velocityYBox.isChecked()
         if self._obj.VelocityYEnabled:
@@ -118,3 +132,171 @@ class _TaskPanel(object):
         if self._obj.VelocityZEnabled:
             quantity = Units.Quantity(self._paramWidget.velocityZTxt.text())
             self._obj.VelocityZ = float(quantity.getValueAs(unit))
+
+
+"""
+# may be use rawProperty, see old material panel
+# if tackled down use on any input field in Python (femguiutils)
+# here and material task panel
+# forum link:
+# https://forum.freecadweb.org/viewtopic.php?t=46873
+# https://forum.freecadweb.org/viewtopic.php?&t=24015
+# local on my machine: ein input widget pop up to test
+# /home/hugo/Documents/projekte--freecad/prj_verschiedene/qtreeatributes/widget_test/
+# mein unts file on desktop
+# add from unts file to cardutils or all the the new method on femguiutils
+
+
+from FreeCAD import Units
+getattr(Units, 'Pressure')
+Units.Pressure
+Units.Quantity('25 MPa')
+Units.Quantity('25 MPa').getValueAs('Pa')
+Units.Quantity('25 MPa').getUserPreferred()[2]
+Units.Quantity(25000, Units.Pressure)
+Units.Quantity(25000, Units.Pressure).getValueAs('MPa')
+Units.Unit('25 MPa')
+Units.Unit(-1,1,-2,0,0,0,0,0)
+
+
+Units.Unit('MPa')
+Units.Unit('kg/(mm*s^2)')
+Units.Unit('t/(m*min^2)')
+Units.Pressure
+
+
+Units.Unit('MPa') == Units.Pressure
+Units.Unit('MPa') == Units.Length
+Units.Unit('mm') == Units.Pressure
+Units.Unit('mm') == Units.Length
+Units.Unit('t/(m*min^2)') == Units.Unit('MPa')
+
+
+Units.Quantity('5')
+
+
+# in cmd FreeCAD is exited
+from FreeCAD import Units
+myquantity = Units.Quantity('500')
+Units.Unit(myquantity)
+
+from FreeCAD import Units
+myquantity = Units.Quantity('5')
+Units.Unit(myquantity)
+
+
+# exception, Unit mismatch
+Units.Quantity('25 ').getValueAs('Pa')
+
+
+# add to cardutils examples, or all in femguiutils
+
+
+Units.Unit(Units.Quantity('5 MPa'))
+Units.Unit(Units.Quantity('5 Mpa'))
+Units.Unit(Units.Quantity('MPa'))
+Units.Unit(Units.Quantity('Mpa'))
+
+Units.Quantity('5')
+
+
+from FreeCAD import Units
+Units.Unit(Units.Quantity('500'))
+Units.Unit(Units.Quantity('5'))
+Units.Unit(Units.Quantity('-5'))
+
+
+
+# some unit code **********
+from FreeCAD import Units
+getattr(Units, 'Pressure')
+Units.Pressure
+Units.Quantity('25 MPa')
+Units.Quantity('25 MPa').getValueAs('Pa')
+Units.Quantity('25 MPa').getUserPreferred()[2]
+Units.Quantity(25000, Units.Pressure)
+Units.Quantity(25000, Units.Pressure).getValueAs('MPa')
+Units.Pressure
+Units.Unit('25 MPa')
+Units.Unit(-1,1,-2,0,0,0,0,0)
+
+# base units
+from FreeCAD import Units
+Units.Length
+Units.Mass
+Units.TimeSpan
+Units.ElectricCurrent
+Units.Temperature
+Units.AmountOfSubstance
+Units.LuminousIntensity
+Units.Angle
+
+
+
+Units.Quantity('50 MPa')
+type(Units.Quantity('50 MPa'))
+
+>>>
+>>> Units.Quantity('50 MPa')
+50000.0 kg/(mm*s^2)
+>>> type(Units.Quantity('50 MPa'))
+<class 'Base.Quantity'>
+>>>
+
+
+Units.Pressure
+Units.Unit('25 MPa')
+Units.Unit(-1,1,-2,0,0,0,0,0)
+type(Units.Pressure)
+
+>>>
+>>> Units.Pressure
+Unit: kg/(mm*s^2) (-1,1,-2,0,0,0,0,0) [Pressure]
+>>> Units.Unit('25 MPa')
+Unit: kg/(mm*s^2) (-1,1,-2,0,0,0,0,0) [Pressure]
+>>> Units.Unit(-1,1,-2,0,0,0,0,0)
+Unit: kg/(mm*s^2) (-1,1,-2,0,0,0,0,0) [Pressure]
+>>> type(Units.Pressure)
+<class 'Base.Unit'>
+>>>
+
+
+from FreeCAD import Units
+
+q1 = Units.Quantity('500 MPa')
+q1.Unit
+Units.Unit(q1)
+
+q2 = Units.Quantity('500')
+q2.Unit
+Units.Unit(q2)
+
+q3 = Units.Quantity('5')
+q3.Unit
+Units.Unit(q3)
+
+
+# src/Base/UnitPy.xml
+
+Unit
+defines a unit type, calculate and compare.
+
+The following constructors are supported:
+Unit()                        -- empty constructor
+Unit(i1,i2,i3,i4,i5,i6,i7,i8) -- unit signature
+Unit(Quantity)                -- copy unit from Quantity
+Unit(Unit)                    -- copy constructor
+Unit(string)                  -- parse the string for units
+
+Quantity
+defined by a value and a unit.
+
+The following constructors are supported:
+Quantity() -- empty constructor
+Quantity(Value) -- empty constructor
+Quantity(Value,Unit) -- empty constructor
+Quantity(Quantity) -- copy constructor
+Quantity(string) -- arbitrary mixture of numbers and chars defining a Quantity
+
+
+"""

@@ -565,6 +565,7 @@ class _TaskPanel:
         # print(inputfield_text)
 
     # mechanical input fields
+    """
     def ym_changed(self):
         # FreeCADs standard unit for stress is kPa for UnitsSchemeInternal, but MPa can be used
         self.update_material_property(
@@ -572,6 +573,24 @@ class _TaskPanel:
             "YoungsModulus",
             "kPa",
         )
+    """
+    def ym_changed(self):
+        # FreeCADs standard unit for stress is kPa
+        value = self.parameterWidget.input_fd_young_modulus.property("rawValue")
+        print(value)
+        print(self.parameterWidget.input_fd_young_modulus.text())
+        old_ym = Units.Quantity(self.material["YoungsModulus"]).getValueAs("kPa")
+        variation = 0.001
+        if value:
+            if not (1 - variation < float(old_ym) / value < 1 + variation):
+                # YoungsModulus has changed
+                material = self.material
+                material["YoungsModulus"] = unicode(value) + " kPa"
+                self.material = material
+                if self.has_transient_mat is False:
+                    self.add_transient_material()
+                else:
+                    self.set_transient_material()
 
     def density_changed(self):
         print(
