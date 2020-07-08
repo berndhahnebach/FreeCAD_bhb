@@ -348,7 +348,10 @@ def insert(srcfile, docname, skip=[], only=[], root=None, preferences=None):
     groups = importIFCHelper.buildRelGroups(ifcfile)
     subtractions = importIFCHelper.buildRelSubtractions(ifcfile)
     mattable = importIFCHelper.buildRelMattable(ifcfile)
-    colors = importIFCHelper.buildRelProductColors(ifcfile, prodrepr)
+    #colors = importIFCHelper.buildRelProductColors(ifcfile, prodrepr)
+    colors = importIFCHelper.buildRelColors(ifcfile, prodrepr)
+    print("\n")
+    print(colors)
     colordict = {}  # { objname:color tuple } for non-GUI use
     if preferences['DEBUG']:
         _msg("done.")
@@ -919,7 +922,10 @@ def insert(srcfile, docname, skip=[], only=[], root=None, preferences=None):
                         obj.ViewObject.ShapeColor = tuple(colors[pid][0:3])
                     if hasattr(obj.ViewObject,"Transparency"):
                         obj.ViewObject.Transparency = colors[pid][3]
-
+                        """
+                        if len(colors[pid]) > 3:
+                            obj.ViewObject.Transparency = colors[pid][3]
+                        """
 
             # if preferences['DEBUG'] is on, recompute after each shape
             if preferences['DEBUG']: FreeCAD.ActiveDocument.recompute()

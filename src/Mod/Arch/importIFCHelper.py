@@ -323,11 +323,14 @@ def buildRelColors(ifcfile, prodrepr):
         for it in m.Representations:
             if it.Items:
                 style_material_id[it.Items[0].id()] = m.RepresentedMaterial.id()
+                print("\n")
+                print(m.RepresentedMaterial.id())
 
     # create colors out of style_color_rgb and style_material_id
     for k in style_material_id:
         if k in style_color_rgb:
             colors[style_material_id[k]] = style_color_rgb[k]
+            print(style_color_rgb[k])
 
     return colors
 
