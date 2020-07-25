@@ -61,6 +61,7 @@ SET(FemExamples_SRCS
     femexamples/constraint_tie.py
     femexamples/constraint_transform_beam_hinged.py
     femexamples/constraint_transform_torque.py
+    femexamples/curved_pipe_heat_flow.py
     femexamples/examplesgui.py
     femexamples/elmer_nonguitutorial01_eigenvalue_of_elastic_beam.py
     femexamples/equation_electrostatics_capacitance_two_balls.py
