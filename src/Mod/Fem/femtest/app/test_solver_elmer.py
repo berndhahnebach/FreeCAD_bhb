@@ -209,6 +209,46 @@ class TestSolverElmer(unittest.TestCase):
         self.input_file_writing_test(get_namefromdef("test_"))
 
     # ********************************************************************************************
+    def test_equation_electrostatics_capacitance_two_balls_0_mm(
+        self
+    ):
+        fcc_print("")
+        self.set_unit_schema(0)  # mm/kg/s
+        from femexamples.equation_electrostatics_capacitance_two_balls import setup
+        setup(self.document, "elmer")
+        self.input_file_writing_test(get_namefromdef("test_"))
+
+    # ********************************************************************************************
+    def test_equation_electrostatics_cube_capacitor_0_mm(
+        self
+    ):
+        fcc_print("")
+        self.set_unit_schema(0)  # mm/kg/s
+        from femexamples.equation_electrostatics_cube_capacitor import setup
+        setup(self.document, "elmer")
+        self.input_file_writing_test(get_namefromdef("test_"))
+
+    # ********************************************************************************************
+    def test_equation_electrostatics_electricforce_elmer_nongui6_0_mm(
+        self
+    ):
+        fcc_print("")
+        self.set_unit_schema(0)  # mm/kg/s
+        from femexamples.equation_electrostatics_electricforce_elmer_nongui6 import setup
+        setup(self.document, "elmer")
+        self.input_file_writing_test(get_namefromdef("test_"))
+
+    # ********************************************************************************************
+    def test_thermomech_bimetall_0_mm(
+        self
+    ):
+        fcc_print("")
+        self.set_unit_schema(0)  # mm/kg/s
+        from femexamples.thermomech_bimetall import setup
+        setup(self.document, "elmer")
+        self.input_file_writing_test(get_namefromdef("test_"))
+
+    # ********************************************************************************************
     def input_file_writing_test(
         self,
         base_name

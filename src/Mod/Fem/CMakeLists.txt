@@ -332,7 +332,11 @@ SET(FemTestsElmer_SRCS
     femtest/data/elmer/ccxcantilever_faceload_1_si.sif
     femtest/data/elmer/ccxcantilever_nodeload_0_mm.sif
     femtest/data/elmer/ccxcantilever_prescribeddisplacement_0_mm.sif
+    femtest/data/elmer/equation_electrostatics_capacitance_two_balls_0_mm.sif
+    femtest/data/elmer/equation_electrostatics_cube_capacitor_0_mm.sif
+    femtest/data/elmer/equation_electrostatics_electricforce_elmer_nongui6_0_mm.sif
     femtest/data/elmer/group_mesh.geo
+    femtest/data/elmer/thermomech_bimetall_0_mm.sif
     femtest/data/elmer/ELMERSOLVER_STARTINFO
 )
 
