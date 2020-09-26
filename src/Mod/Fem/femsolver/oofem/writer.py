@@ -103,7 +103,7 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
 
     def write_oofem_input_file(self):
 
-        timestart = time.clock()
+        timestart = time.process_time()
 
         """
         # once we gone need the nodes, we may recode the mesh writer
@@ -150,7 +150,7 @@ class FemInputWriterOOFEM(writerbase.FemInputWriter):
         inpfile.close()
         writing_time_string = (
             "Writing time input file: {} seconds"
-            .format(round((time.clock() - timestart), 2))
+            .format(round((time.process_time() - timestart), 2))
         )
         FreeCAD.Console.PrintMessage(writing_time_string + " \n\n")
         return self.file_name
