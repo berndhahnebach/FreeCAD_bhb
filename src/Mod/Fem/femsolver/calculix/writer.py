@@ -132,16 +132,12 @@ class FemInputWriterCcx(writerbase.FemInputWriter):
     # write calculix input
     def write_calculix_input_file(self):
 
-        FreeCAD.Console.PrintMessage("Get mesh sets.\n")
         time_start = time.process_time()
-        if not self.ccx_elsets:
-            self.get_mesh_sets()
-        time_getsets = time.process_time()
-
         FreeCAD.Console.PrintMessage(
             "Start writing CalculiX input file to: {}\n"
             .format(self.file_name)
         )
+
         if self.solver_obj.SplitInputWriter is True:
             FreeCAD.Console.PrintMessage("Split input file.\n")
             self.split_inpfile = True
@@ -209,18 +205,9 @@ class FemInputWriterCcx(writerbase.FemInputWriter):
         # close file
         inpfile.close()
 
-        setstime = round((time_getsets - time_start), 3)
-        writetime = round((time.process_time() - time_getsets), 3)
-        all_time = round((setstime + writetime), 3)
-        FreeCAD.Console.PrintMessage(
-            "Getting mesh sets or groups time: {} seconds \n".format(setstime)
-        )
+        writetime = round((time.process_time() - time_start), 3)
         FreeCAD.Console.PrintMessage(
             "Writing time CalculiX input file: {} seconds \n".format(writetime)
-        )
-        FreeCAD.Console.PrintMessage(
-            "Overall time CalculiX input file: {} seconds \n\n"
-            .format(all_time)
         )
 
         # return
